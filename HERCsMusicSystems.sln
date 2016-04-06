@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "studio", "prolog\windows\windows.vcxproj", "{566ED8F7-31D1-4B8A-BF68-29D74CF380EE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lunar", "lunar\lunar_dll\lunar_dll.vcxproj", "{34CBC4AE-2B0B-4836-AF21-F4EC6A1A4571}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA94FD8E-979F-4765-9A75-56B1AB3E3B96} = {DA94FD8E-979F-4765-9A75-56B1AB3E3B96}
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE} = {566ED8F7-31D1-4B8A-BF68-29D74CF380EE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prcgtk", "prolog\prcgtk_dll\prcgtk_dll.vcxproj", "{DA94FD8E-979F-4765-9A75-56B1AB3E3B96}"
+	ProjectSection(ProjectDependencies) = postProject
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE} = {566ED8F7-31D1-4B8A-BF68-29D74CF380EE}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE}.Debug|Win32.Build.0 = Debug|Win32
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE}.Release|Win32.ActiveCfg = Release|Win32
+		{566ED8F7-31D1-4B8A-BF68-29D74CF380EE}.Release|Win32.Build.0 = Release|Win32
+		{34CBC4AE-2B0B-4836-AF21-F4EC6A1A4571}.Debug|Win32.ActiveCfg = Debug|Win32
+		{34CBC4AE-2B0B-4836-AF21-F4EC6A1A4571}.Debug|Win32.Build.0 = Debug|Win32
+		{34CBC4AE-2B0B-4836-AF21-F4EC6A1A4571}.Release|Win32.ActiveCfg = Release|Win32
+		{34CBC4AE-2B0B-4836-AF21-F4EC6A1A4571}.Release|Win32.Build.0 = Release|Win32
+		{DA94FD8E-979F-4765-9A75-56B1AB3E3B96}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DA94FD8E-979F-4765-9A75-56B1AB3E3B96}.Debug|Win32.Build.0 = Debug|Win32
+		{DA94FD8E-979F-4765-9A75-56B1AB3E3B96}.Release|Win32.ActiveCfg = Release|Win32
+		{DA94FD8E-979F-4765-9A75-56B1AB3E3B96}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
