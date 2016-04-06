@@ -1,0 +1,8 @@
+
+[import "doctor"]
+
+[BuildDoctor 6]
+
+[show "Doctor created."]
+
+[exit]
