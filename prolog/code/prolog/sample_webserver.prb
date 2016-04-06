@@ -1,0 +1,68 @@
+
+[import "http"]
+
+[[capitol "Australia" "Canberra"]]
+[[capitol "New Zealand" "Wellington"]]
+[[capitol "France" "Paris"]]
+[[capitol "Poland" "Warsaw"]]
+[[capitol "USA" "Cupertino"]]
+
+[[controller_index *req *res]
+	[*res "HTTP/1.1 200 OK\n\n<body>\n"]
+	[view_list_all *res]
+	[*res "</body>"]
+]
+
+[[controller_delete *req *res *country]
+	[*res "HTTP/1.1 200 OK\n\n<body>\n"]
+	[*res "DELETING " *country "<br/><br/>\n"]
+	[TRY [delcl [[capitol *country *]]]]
+	[view_list_all *res]
+	[*res "</body>"]
+]
+
+[[controller_insert *req *res]
+	[*req param "country" *country]
+	[*req param "city" *city]
+	[*res "HTTP/1.1 200 OK\n\n<body>\n"]
+	[*res "INSERTING " *country " " *city "<br/><br/>\n"]
+	[addcl [[capitol *country *city]]]
+	[view_list_all *res]
+	[*res "</body>"]
+]
+
+
+[[view_list_all *res]
+	[FORM *res POST capitol insert] [*res "\n"]
+	[*res "<table>\n"]
+	[*res "<tr><td><h1>COUNTRY</h3></td><td><h3>CAPITOL</h1></td></tr>\n"]
+	[ALL
+		[capitol *country *city]
+		[*res "<tr><td>" *country "</td><td>" *city "</td>"]
+		[*res "<td>"] [GET *res capitol delete *country delete] [*res "</td></tr>\n"]
+	]
+	[*res "<tr><td>"] [param *res country] [*res "</td><td>"] [param *res city] [*res "</td><td>"] [param *res submit button NEW] [*res "</td></tr>\n"]
+	[*res "</table>\n"]
+	[FORM *res]
+	[*res "\n"]
+]
+
+[[router *req *res]
+	[*req HTTP_URI : *route]
+	[show [route *req *res : *route]]
+	[route *req *res : *route]
+]
+
+[[route *req *res GET capitol] [controller_index *req *res]]
+[[route *req *res GET capitol delete *country] [controller_delete *req *res *country]]
+[[route *req *res POST capitol insert] [controller_insert *req *res]]
+[[route *req *res : *] [*res "HTTP/1.1 401 Not found\n\n"]]
+
+
+[show "ready"]
+
+[webserver service 3008 router]
+[show "Done...."]
+
+[exit]
+

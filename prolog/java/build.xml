@@ -1,0 +1,47 @@
+<project default="run">
+
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="studio*"/>
+		</delete>
+		<delete dir="Prolog"/>
+	</target>
+
+	<target name="compile">
+		<javac srcdir="../code/prolog" destdir="." includeantruntime="false"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="studio.jar">
+			<!--<fileset dir="." excludes="studio.jar build.xml"/>-->
+			<fileset dir="." includes="studio.class"/>
+			<fileset dir="." includes="Prolog/*.class"/>
+			<fileset dir="../code/prolog" includes="studio.prc"/>
+			<fileset dir="../code/prolog" includes="keyboard.prc"/>
+			<fileset dir="../code/prolog" includes="test.prc"/>
+			<fileset dir="../code/prolog" includes="store.prc"/>
+			<manifest><attribute name="Main-Class" value="studio"/></manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<!-- <java jar="studio.jar" fork="true">
+			<arg value="studio"/>
+			<arg value="a"/>
+			<arg value="b"/>
+			<arg value="c"/>
+		</java> -->
+		<java classname="studio" classpath="studio.jar"/>
+	</target>
+
+	<target name="test" depends="jar">
+		<java classname="studio" classpath="studio.jar">
+			<arg value="test.prb"/>
+			<arg value="a"/>
+			<arg value="b"/>
+			<arg value="c"/>
+		</java>
+	</target>
+
+</project>
+

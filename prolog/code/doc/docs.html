@@ -1,0 +1,4079 @@
+<head>
+    <style type="text/css">
+        .doc_header {font-family:Arial; font-size:1.5em; font-weight:bold;}
+        .doc_library {font-family:Arial; font-size:1.5em;}
+        .doc_library_section {font-family:Arial; font-size:1.5em; margin-top:1em;}
+        .doc_predicate{font-family:Arial; padding:1em; width:70em;}
+        .doc_predicate_header {background-color:#eeeeee; font-family:monospace; background-color:gold;}
+        .doc_predicate_body {font-family:Arial;}
+        .doc_predicate_code {font-family:monospace; background-color:#eeeeee;}
+    </style>
+</head>
+<body bgcolor="blue">
+<div align="center"><div align="left" style="width:1200px; background-color:white;">
+<div class="doc_header">TABLE OF CONTENT</div>
+<ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#syntax">Syntax</a></li>
+    <li><a href="#libraries">Libraries</a></li>
+    <ul>
+        <li><a href="#studio">studio</a></li>
+        <ul>
+            <li><a href="#arithmetic">Arithmetic</a></li>
+            <li><a href="#logic">Logic</a></li>
+            <li><a href="#input_output">Input / Output</a></li>
+            <li><a href="#clause_atome">Clause and Atome manipulation</a></li>
+            <li><a href="#term">Term manipulation</a></li>
+            <li><a href="#multithreading">Multi-threading</a></li>
+            <li><a href="#metalogical">Metalogical</a></li>
+        </ul>
+        <li><a href="#conductor">conductor</a></li>
+        <li><a href="#midi">midi</a></li>
+        <li><a href="#neural">neural</a></li>
+        <li><a href="#http">http</a></li>
+        <li><a href="sql">sql</a></li>
+    </ul>
+</ul>
+
+<br />
+
+<div class="doc_header"><a id="syntax">SYNTAX</a></div>
+<table class="syntax_table" style="font-family:monospace; background:#eeeeee">
+    <tr><td>&lt;command&gt;</td><td>:=</td><td>&lt;list&gt; | &lt;atom&gt &lt;list&gt;</td></tr>
+    <tr><td>&lt;program&gt;</td><td>:=</td><td>{ import ( &lt;atom&gt; | &lt;text&gt; ) }</td></tr>
+    <tr><td></td><td></td><td>program &lt;atom&gt; [ #machine := &lt;text&gt; ] ( #auto | &lt;atoms&gt; )</td></tr>
+    <tr><td></td><td></td><td>{ (</td></tr>
+    <tr><td></td><td></td><td>&emsp;&emsp;&emsp;&lt;machine&gt; |</td></tr>
+    <tr><td></td><td></td><td>&emsp;&emsp;&emsp;[ auto := ] &lt;clause&gt; |</td></tr>
+    <tr><td></td><td></td><td>&emsp;&emsp;&emsp;&lt;preprocessor&gt; |</td></tr>
+    <tr><td></td><td></td><td>&emsp;&emsp;&emsp;protect &lt;atoms&gt; |</td></tr>
+    <tr><td></td><td></td><td>&emsp;&emsp;&emsp;private &lt;atoms&gt;</td></tr>
+    <tr><td></td><td></td><td>) }</td></tr>
+    <tr><td></td><td></td><td>end [ := &lt;clause&gt; ] .</td></tr>
+    <tr><td>&lt;atom&gt;</td><td>::=</td><td>( "_" | &lt;letter&gt; ) { ( "_" | &lt;letter&gt; | &lt;numeral&gt; ) }</td></tr>
+    <tr><td>&lt;atoms&gt;</td><td>::=</td><td>"[" { &lt;atom&gt; } "]"</td></tr>
+    <tr><td>&lt;positive&gt;</td><td>::=</td><td>&lt;numeral&gt; { &lt;numeral&gt; }</td></tr>
+    <tr><td>&lt;number&gt;</td><td>::=</td><td>[ "-" ] &lt;positive&gt;</td></tr>
+    <tr><td>&lt;float&gt;</td><td>::=</td><td>&lt;number&gt; . &lt;positive&gt;</td></tr>
+    <tr><td>&lt;text&gt;</td><td>::=</td><td>"\"" { &lt;any-character&gt; } "\""</td></tr>
+    <tr><td>&lt;variable&gt;</td><td>::=</td><td>"*" { ( "_" | &lt;letter&gt; | &lt;numeral&gt; ) }</td></tr>
+    <tr><td>&lt;element&gt;</td><td>::=</td><td>&lt;atom&gt; | &lt;number&gt; | &lt;float&gt; | &lt;text&gt; | / | fail | "[]" | &lt;list&gt; | &lt;variable&gt;</td></tr>
+    <tr><td>&lt;tail&gt;</td><td>::=</td><td>{ &lt;element&gt; } [ : &lt;element&gt; ] "]"</td></tr>
+    <tr><td>&lt;list&gt;</td><td>::=</td><td>"[" &lt;element&gt; &lt;tail&gt;</td></tr>
+    <tr><td>&lt;clause&gt;</td><td>::=</td><td>"[[" &lt;atom&gt; &lt;tail&gt; &lt;tail&gt;</td></tr>
+    <tr><td>&lt;machine&gt;</td><td>::=</td><td>#machine &lt;atom&gt; := &lt;text&gt;</td></tr>
+    <tr><td>&lt;preprocessor&gt;</td><td>::=</td><td>preprocessor := ( &lt;atom&gt; | "[]" )</td></tr>
+</table>
+
+<br />
+
+<div class="doc_predicate">
+    <a id="predicate_@">
+        <div class="doc_predicate_header">
+            @
+        </div>
+        <div class="doc_predicate_body">
+            @
+        </div>
+    </a>
+</div>
+
+<div class="doc_header"><a id="libraries">LIBRARIES</a></div>
+
+<ul>
+    <li><a href="#studio">studio</a></li>
+    <ul>
+        <li><a href="#arithmetic_logic">Arithmetic and Logic</a>
+            <br />
+            <a href="#predicate_abs">abs</a>
+            <a href="#predicate_add">add</a>
+            <a href="#predicate_add1">add1</a>
+            <a href="#predicate_and">and</a>
+            <a href="#predicate_cos">cos</a>
+            <a href="#predicate_degrad">degrad</a>
+            <a href="#predicate_DFT">DFT</a>
+            <a href="#predicate_div">div</a>
+            <a href="#predicate_e">e</a>
+            <a href="#predicate_exp">exp</a>
+            <a href="#predicate_FFT">FFT</a>
+            <a href="#predicate_greater">greater</a>
+            <a href="#predicate_greater_eq">greater_eq</a>
+            <a href="#predicate_grnd">grnd</a>
+            <a href="#predicate_less">less</a>
+            <a href="#predicate_less_eq">less_eq</a>
+            <a href="#predicate_log2">log2</a>
+            <a href="#predicate_log10">log10</a>
+            <a href="#predicate_ln">ln</a>
+            <a href="#predicate_mac">mac</a>
+            <a href="#predicate_max">max</a>
+            <a href="#predicate_min">min</a>
+            <a href="#predicate_mod">mod</a>
+            <a href="#predicate_mult">mult</a>
+            <a href="#predicate_or">or</a>
+            <a href="#predicate_pi">pi</a>
+            <a href="#predicate_pow">pow</a>
+            <a href="#predicate_rnd">rnd</a>
+            <a href="#predicate_rnd_control">rnd_control</a>
+            <a href="#predicate_series">series</a>
+            <a href="#predicate_sin">sin</a>
+            <a href="#predicate_sub">sub</a>
+            <a href="#predicate_sub1">sub1</a>
+            <a href="#predicate_sum">sum</a>
+            <a href="#predicate_times">times</a>
+            <a href="#predicate_trunc">trunc</a>
+            <a href="#predicate_xor">xor</a>
+        </li>
+        <li><a href="#string_manipulation">String Manipulation</a>
+            <br />
+            <a href="#predicate_StringReplaceAll">StringReplaceAll</a>
+            <a href="#predicate_StringReplaceOnce">StringReplaceOnce</a>
+            <a href="#predicate_StringToLower">StringToLower</a>
+            <a href="#predicate_StringToUpper">StringToUpper</a>
+        </li>
+        <li><a href="#input_output">Input / Output</a>
+            <br />
+            <a href="#predicate_add_search_directory">add_search_directory</a>
+            <a href="#predicate_ARGS">ARGS</a>
+            <a href="#predicate_background">background</a>
+            <a href="#predicate_batch">batch</a>
+            <a href="#predicate_bootstrap">bootstrap</a>
+            <a href="#predicate_cd">cd</a>
+            <a href="#predicate_close_editor">close_editor</a>
+            <a href="#predicate_command">command</a>
+            <a href="#predicate_consult">consult</a>
+            <a href="#predicate_copy">copy</a>
+            <a href="#predicate_create_module">create_module</a>
+            <a href="#predicate_dir">dir</a>
+            <a href="#predicate_DIR">DIR</a>
+            <a href="#predicate_edit">edit</a>
+            <a href="#predicate_erase">erase</a>
+            <a href="#predicate_erase_directory">erase_directory</a>
+            <a href="#predicate_execute">execute</a>
+            <a href="#predicate_exit">exit</a>
+            <a href="#predicate_file_reader">file_reader</a>
+            <a href="#predicate_file_writer">file_writer</a>
+            <a href="#predicate_foreground">foreground</a>
+            <a href="#predicate_get_volume_serial_number">get_volume_serial_number</a>
+            <a href="#predicate_import">import</a>
+            <a href="#predicate_list">list</a>
+            <a href="#predicate_load">load</a>
+            <a href="#predicate_machine_type">machine_type</a>
+            <a href="#predicate_make_directory">make_directory</a>
+            <a href="#predicate_move">move</a>
+            <a href="#predicate_nl">nl</a>
+            <a href="#predicate_object_counter">object_counter</a>
+            <a href="#predicate_open_editor">open_editor</a>
+            <a href="#predicate_operating_system">operating_system</a>
+            <a href="#predicate_pp">pp</a>
+            <a href="#predicate_pr">pr</a>
+            <a href="#predicate_preprocessor">preprocessor</a>
+            <a href="#predicate_prompt">prompt</a>
+            <a href="#predicate_pt">pt</a>
+            <a href="#predicate_query_stack">query_stack</a>
+            <a href="#predicate_read">read</a>
+            <a href="#predicate_load_history">load_history</a>
+            <a href="#predicate_readln">readln</a>
+            <a href="#predicate_relativise_path">relativise_path</a>
+            <a href="#predicate_reload">reload</a>
+            <a href="#predicate_remove_module">remove_module</a>
+            <a href="#predicate_save_history">save_history</a>
+            <a href="#predicate_screen_coordinates">screen_coordinates</a>
+            <a href="#predicate_search_directories">search_directories</a>
+            <a href="#predicate_security_check">security_check</a>
+            <a href="#predicate_set_captions">set_...._captions</a>
+            <a href="#predicate_set_machine">set_machine</a>
+            <a href="#predicate_shebang_reader">shebang_reader</a>
+            <a href="#predicate_show">show</a>
+            <a href="#predicate_write">write</a>
+        </li>
+        <li><a href="#clause_atome">Clause and Atome manipulation</a>
+            <br />
+            <a href="#predicate_addcl">addcl</a>
+            <a href="#predicate_addcl0">addcl0</a>
+            <a href="#predicate_auto_atoms">auto_atoms</a>
+            <a href="#predicate_cl">cl</a>
+            <a href="#predicate_CL">CL</a>
+            <a href="#predicate_create_atom">create_atom</a>
+            <a href="#predicate_create_atoms">create_atoms</a>
+            <a href="#predicate_delallcl">delallcl</a>
+            <a href="#predicate_delcl">delcl</a>
+            <a href="#predicate_DELCL">DELCL</a>
+            <a href="#predicate_let">let</a>
+            <a href="#predicate_overwrite">overwrite</a>
+            <a href="#predicate_OVERWRITE">OVERWRITE</a>
+            <a href="#predicate_search_atom">search_atom</a>
+            <a href="#predicate_search_atom_c">search_atom_c</a>
+            <a href="#predicate_scripted_atoms">scripted_atoms</a>
+            <a href="#predicate_unique_atoms">unique_atoms</a>
+        </li>
+        <li><a href="#term">Term manipulation</a>
+            <br />
+            <a href="#predicate_e32">e32</a>
+            <a href="#predicate_has_machine">has_machine</a>
+            <a href="#predicate_is_atom">is_atom</a>
+            <a href="#predicate_is_double">is_double</a>
+            <a href="#predicate_is_head">is_head</a>
+            <a href="#predicate_is_integer">is_integer</a>
+            <a href="#predicate_is_number">is_number</a>
+            <a href="#predicate_is_text">is_text</a>
+            <a href="#predicate_is_var">is_var</a>
+            <a href="#predicate_text_list">text_list</a>
+            <a href="#predicate_text_term">text_term</a>
+        </li>
+        <li><a href="#multithreading">Multi-threading</a>
+            <br />
+            <a href="#predicate_crack">crack</a>
+            <a href="#predicate_critical_section">critical_section</a>
+            <a href="#predicate_monitor">monitor</a>
+            <a href="#predicate_msemaphore">msemaphore</a>
+            <a href="#predicate_mutex">mutex</a>
+            <a href="#predicate_semaphore">semaphore</a>
+            <a href="#predicate_task">task</a>
+            <a href="#predicate_timeout">timeout</a>
+            <a href="#predicate_timestamp">timestamp</a>
+            <a href="#predicate_wait">wait</a>
+        </li>
+        <li><a href="#metalogical">Metalogical</a>
+            <br />
+            <a href="#predicate_ACCUMULATOR">ACCUMULATOR</a>
+            <a href="#predicate_ALL">ALL</a>
+            <a href="#predicate_APPEND">APPEND</a>
+            <a href="#predicate_ARRAY">ARRAY</a>
+            <a href="#predicate_AT">AT</a>
+            <a href="#predicate_CONSTANT">CONSTANT</a>
+            <a href="#predicate_dec">dec</a>
+            <a href="#predicate_define-this">define-this</a>
+            <a href="#predicate_eq">eq</a>
+            <a href="#predicate_FOR">FOR</a>
+            <a href="#predicate_forever">forever</a>
+            <a href="#predicate_FOREVER">FOREVER</a>
+            <a href="#predicate_IF">IF</a>
+            <a href="#predicate_inc">inc</a>
+            <a href="#predicate_INDEX">INDEX</a>
+            <a href="#predicate_INLIST">INLIST</a>
+            <a href="#predicate_isall">isall</a>
+            <a href="#predicate_ISALL">ISALL</a>
+            <a href="#predicate_isallq">isallq</a>
+            <a href="#predicate_isallr">isallr</a>
+            <a href="#predicate_lambda">lambda</a>
+            <a href="#predicate_lazy">lazy</a>
+            <a href="#predicate_LENGTH">LENGTH</a>
+            <a href="#predicate_MAP">MAP</a>
+            <a href="#predicate_maximise">maximise</a>
+            <a href="#predicate_minimise">minimise</a>
+            <a href="#predicate_NODUP">NODUP</a>
+            <a href="#predicate_not">not</a>
+            <a href="#predicate_ONE">ONE</a>
+            <a href="#predicate_ONLIST">ONLIST</a>
+            <a href="#predicate_PROBE">PROBE</a>
+            <a href="#predicate_QUEUE">QUEUE</a>
+            <a href="#predicate_res">res</a>
+            <a href="#predicate_REVERSE">REVERSE</a>
+            <a href="#predicate_rres">rres</a>
+            <a href="#predicate_SELECT">SELECT</a>
+            <a href="#predicate_sort">sort</a>
+            <a href="#predicate_STACK">STACK</a>
+            <a href="#predicate_TRY">TRY</a>
+            <a href="#predicate_ures">ures</a>
+            <a href="#predicate_var">var</a>
+            <a href="#predicate_VARIABLE">VARIABLE</a>
+            <a href="#predicate_WHILE">WHILE</a>
+        </li>
+    </ul>
+    <li><a href="#conductor">conductor</a></li>
+    <li><a href="#midi">midi</a></li>
+    <ul>
+        <li>
+            <a href="#midi_network">MIDI network</a>
+            <br />
+            <a href="#predicate_connectThru">connectThru</a>
+            <a href="#predicate_createDestination">createDestination</a>
+            <a href="#predicate_createLine">createLine</a>
+            <a href="#predicate_createSource">createSource</a>
+            <a href="#predicate_defaultDestination">defaultDestination</a>
+        </li>
+        <li>
+            <a href="#midi_commands">MIDI commands</a>
+            <br />
+            <a href="#predicate_activesensing">activesensing</a>
+            <a href="#predicate_aftertouch">aftertouch</a>
+            <a href="#predicate_chex">chex</a>
+            <a href="#predicate_chexer">chexer</a>
+            <a href="#predicate_CONTINUE">CONTINUE</a>
+            <a href="#predicate_control">control</a>
+            <a href="#predicate_CONTROL">CONTROL</a>
+            <a href="#predicate_keyoff">keyoff</a>
+            <a href="#predicate_keyon">keyon</a>
+            <a href="#predicate_midi_message">midi_message</a>
+            <a href="#predicate_pitch">pitch</a>
+            <a href="#predicate_PITCH">PITCH</a>
+            <a href="#predicate_polyaftertouch">polyaftertouch</a>
+            <a href="#predicate_programchange">programchange</a>
+            <a href="#predicate_START">START</a>
+            <a href="#predicate_STOP">STOP</a>
+            <a href="#predicate_sysex">sysex</a>
+            <a href="#predicate_SYSEX">SYSEX</a>
+            <a href="#predicate_sysexch">sysexch</a>
+            <a href="#predicate_SYSEXCH">SYSEXCH</a>
+            <a href="#predicate_timingclock">timingclock</a>
+        </li>
+        <li>
+            <a href="#midi_controllers">MIDI pre-defined controllers</a>
+            <br />
+            <a href="#predicate_attack_controller">attack</a>
+            <a href="#predicate_ATTACK_controller">ATTACK</a>
+            <a href="#predicate_bank_controller">bank</a>
+            <a href="#predicate_bank_lsb_controller">bank_lsb</a>
+            <a href="#predicate_breath_controller">breath</a>
+            <a href="#predicate_chorus_controller">chorus</a>
+            <a href="#predicate_cutoff_controller">cutoff</a>
+            <a href="#predicate_foot_controller">foot</a>
+            <a href="#predicate_holdoff_controller">holdoff</a>
+            <a href="#predicate_holdon_controller">holdon</a>
+            <a href="#predicate_modulation_controller">modulation</a>
+            <a href="#predicate_mono_controller">mono</a>
+            <a href="#predicate_pan_controller">pan</a>
+            <a href="#predicate_poly_controller">poly</a>
+            <a href="#predicate_portaoff_controller">portaoff</a>
+            <a href="#predicate_portaon_controller">portaon</a>
+            <a href="#predicate_portatime_controller">portatime</a>
+            <a href="#predicate_release_controller">release</a>
+            <a href="#predicate_resonance_controller">resonance</a>
+            <a href="#predicate_reverb_controller">reverb</a>
+            <a href="#predicate_volume_controller">volume</a>
+        </li>
+        <li>
+            <a href="#musical_processing">Musical processing</a>
+        </li>
+    </ul>
+    <li><a href="#neural">neural</a></li>
+    <li><a href="#http">http</a></li>
+    <li><a href="sql">sql</a></li>
+</ul>
+
+
+<div class="doc_library"><a id="studio">LIBRARY: <b>studio</b></a></div>
+
+<div class="doc_library_section"><a id="arithmetic_logic">Arithmetic and Logic Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_abs">
+        <div class="doc_predicate_header">
+            [abs a *x]<br />
+            [abs a : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Absolute value: *x = abs (a).<br />
+            The argument can be either integer or double.
+            The result is of the same type as the argument.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_add">
+        <div class="doc_predicate_header">
+            [add *x arg-1 arg-2 .... arg-n]<br />
+            [add arg-1 arg-2 .... arg-n *x]<br />
+            [add arg-1 arg-2 .... arg-n : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Adds all arguments: *x = arg-1 + arg-2 + .... + arg-n.<br />
+            Without arguments: *x = 0.<br />
+            Arguments can be integers, doubles, lists of numbers, texts or symbols.
+            If all arguments are integers then the result is integer.
+            If one of the arguments is double and all others are numbers then the result is double as well.
+            If one of the arguments is text or symbol then the result is text.
+            If an argument is a list of numbers then all elements of this list will be multiplied.
+            Can NOT be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_add1">
+        <div class="doc_predicate_header">
+            [add1 x y]<br />
+            [add1 x : y]
+        </div>
+        <div class="doc_predicate_body">
+            Adds 1 or 1.0 to x depending on the type of x. Can be used as a test.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_and">
+        <div class="doc_predicate_header">
+            [and a b *x]<br />
+            [and a b : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Bitwise AND: *x = a AND b.<br />
+            Both arguments must be integers. The result is integer as well.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_cos">
+        <div class="doc_predicate_header">
+            [cos angle *x]<br />
+            [cos angle : *x]<br />
+            [cos *angle x]<br />
+            [cos *angle : x]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates either cosine or arc-cosine.
+            The input angle can be either integer or double.
+            If it is integer then it is assumed to be expressed in degrees.
+            If it is double then it is assumed to be expressed in radians.
+            The argument for arc-cosine can be either double or integer (-1, 0, 1).
+            The result of arc-cosine is always double and expressed in radians.
+            Fails if arc-cosing argument is out of range.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_degrad">
+        <div class="doc_predicate_header">
+            [degrad degrees radians]<br />
+            [degrad degrees : radians]<br />
+        </div>
+        <div class="doc_predicate_body">
+            Converts degrees to radians and vice versa.
+            Degrees can be either integer or double.
+            Radians have to be double.
+            Calculated results (both degrees and radians) will be double.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_DFT">
+        <div class="doc_predicate_header">
+            [DFT [.....] *RE *IM]<br />
+            [DFT [.....] *spectrum]<br />
+            [DFT *wave [.....] [.....]]<br />
+            [DFT *wave [.....]]<br />
+        </div>
+        <div class="doc_predicate_body">
+            Discrete Fourier Transform.
+            It calculates the cosine (*RE) and sine (*IM) series, or spectrum (sqrt (RE^2 + IM^2)).
+            It can also construct a waveform from spectrum provided (either sine series or both cosine and sine series).
+            The values for either wave or spectrum can be integer or double.
+            The result will always contains doubles.<br />
+            <b>Notes:</b><br />
+            <li>The length of the wave is expected to be even.</li>
+            <li>The lengths of spectrums is expected to be half of the wave plus one.</li>
+            <li>The cosine part is the first half of the symetrical series.</li>
+            <li>The sine part is also the first half of the symetrical series. As such, the first and last element are always ZERO.</li>
+            <li>Resynthesis with one spectrum expects DC offset (cosine at frequency ZERO)
+                and even number of sine harmonics (the total number of elements is thus odd).
+                Please, note, the last element should be ZERO.
+            </li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_div">
+        <div class="doc_predicate_header">
+            [div a b *x]<br />
+            [div a b : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Division: *x = a / b.<br />
+            The arguments can be either integer od double.
+            If both a and b are integer then the result is integral division (i.e. with fractional part discarded).
+            If either a or b is double then the result is double as well.
+            Fails if b is 0 or 0.0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_e">
+        <div class="doc_predicate_header">
+            [e *e] [e : *e]
+        </div>
+        <div class="doc_predicate_body">
+            Natural number constant: e = 2.7182818284590451.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_exp">
+        <div class="doc_predicate_header">
+            [exp n *x] [exp n : *x]<br />
+            [exp *n x] [exp *n : x]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates exponent or natural logarithm: *x = e ^ n or *n = ln (x).<br />
+            Arguments can be either integer or double.
+            The result is of the same type as argument (integer result is truncated).
+            Fails if x <= 0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_FFT">
+        <div class="doc_predicate_header">
+            [FFT [.....] *RE *IM]<br />
+            [FFT [.....] *spectrum]<br />
+            [FFT *wave [.....] [.....]]<br />
+            [FFT *wave [.....]]<br />
+        </div>
+        <div class="doc_predicate_body">
+            Works identical to <a href="#predicate_DFT">DFT</a> but in some special cases faster.
+            The special cases include situations when the wave is a series of numbers
+            and its length equals to the power of 2 (i.e. 2, 4, 8, 16, 32, and so on).
+            It uses the algorithm invented first by Carl Friedrich Gauss and last by Cooley and Tukey.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_greater">
+        <div class="doc_predicate_header">
+            [greater arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the arguments are ordered in descending order without duplicates.
+            Arguments are expected to be integers, doubles, texts or atoms.
+            Numbers are compared on their value.
+            Texts and atoms are compared on their alphabetical precedence.
+            It always works with just one argument.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_greater_eq">
+        <div class="doc_predicate_header">
+            [greater_eq arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the arguments are ordered in ascending order.
+            Duplicates are permitted.
+            Arguments are expected to be integers, doubles, texts or atoms.
+            Numbers are compared on their value.
+            Texts and atoms are compared on their alphabetical precedence.
+            It always works with just one argument.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_grnd">
+        <div class="doc_predicate_header">
+            [grnd : *parameters]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates random number indentically as <a href="#predicate_rnd">rnd</a>
+            except it re-generates another value when backtracking.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_less">
+        <div class="doc_predicate_header">
+            [less arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the arguments are ordered in ascending order without duplicates.
+            Arguments are expected to be integers, doubles, texts or atoms.
+            Numbers are compared on their value.
+            Texts and atoms are compared on their alphabetical precedence.
+            It always works with just one argument.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_less_eq">
+        <div class="doc_predicate_header">
+            [less_eq arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the arguments are ordered in ascending order.
+            Duplicates are permitted.
+            Arguments are expected to be integers, doubles, texts or atoms.
+            Numbers are compared on their value.
+            Texts and atoms are compared on their alphabetical precedence.
+            It always works with just one argument.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_log2">
+        <div class="doc_predicate_header">
+            [log2 x *n] [log2 x : *n]<br />
+            [log2 *x n] [log2 *x : n]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates 2-based logarithm or 2 to the power of n: *n = log2 (x) or *x = 2 ^ *n.<br />
+            Arguments can be either integer or double.
+            The result is of the same type as argument (integer result is truncated).
+            Fails if x <= 0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_log10">
+        <div class="doc_predicate_header">
+            [log10 x *n] [log10 x : *n]<br />
+            [log10 *x n] [log10 *x : n]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates 10-based logarithm or 2 to the power of n: *n = log10 (x) or *x = 10 ^ *n.<br />
+            Arguments can be either integer or double.
+            The result is of the same type as argument (integer result is truncated).
+            Fails if x <= 0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ln">
+        <div class="doc_predicate_header">
+            [ln x *n] [ln x : *n]<br />
+            [ln *x n] [ln *x : n]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates e-based logarithm or e to the power of n: *n = ln (x) or *x = e ^ *n.<br />
+            Arguments can be either integer or double.
+            The result is of the same type as argument (integer result is truncated).
+            Fails if x <= 0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_mac">
+        <div class="doc_predicate_header">
+            [mac a b c d]<br/>
+            [mac a b c : d]
+        </div>
+        <div class="doc_predicate_body">
+            Establishes the following relation: a * b + c = d.
+            Only one o the arguments can be a variable.
+            If three arguments are integers then the result will be integer.
+            If any of the arguments is double then the result will be double as well.
+            If used for tests with all four arguments being numbers, then they be either integer or double.
+            The test will check mathematical correctness disregarding data types.
+        </div>
+    </a>
+    <a id="predicate_max">
+        <div class="doc_predicate_header">
+            [max *max arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Finds the maximum value.
+            The arguments can be integers, doubles, texts or atoms.
+            However, all arguments must be either numerical or textual.
+            There have to be at least one argument besides the output value.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_min">
+        <div class="doc_predicate_header">
+            [min *max arg-1 arg-2 .... arg-n]
+        </div>
+        <div class="doc_predicate_body">
+            Finds the minimum value.
+            The arguments can be integers, doubles, texts or atoms.
+            However, all arguments must be either numerical or textual.
+            There have to be at least one argument besides the output value.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_mod">
+        <div class="doc_predicate_header">
+            [mod a b *x]<br />
+            [mod a b : *x]<br />
+            [mod a b *x *y]<br />
+            [mod a b *x : *y]
+        </div>
+        <div class="doc_predicate_body">
+            Modulo (or division remainder): *x = a % b.<br />
+            The second variable (if present) becomes the division result, i.e.:<br />
+            *y + *x * b = a.<br />
+            The result is integer if both a and b are integer.
+            Otherwise *x (and *y) are double.
+            Fails if b is 0 or 0.0.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_mult">
+        <div class="doc_predicate_header">
+            [mult *x arg-1 arg-2 .... arg-n]<br />
+            [mult arg-1 arg-2 .... arg-n *x]<br />
+            [mult arg-1 arg-2 .... arg-n : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Multiplies all arguments: *x = arg-1 * arg-2 * .... * arg-n.<br />
+            Without arguments: *x = 1.<br />
+            Arguments can be integers, doubles, texts or symbols.
+            If all arguments are integers then the result is integer.
+            If one of the arguments is double and all others are numbers then the result is double as well.
+            If one of the arguments is text or symbol then the result is text.
+            Can NOT be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_or">
+        <div class="doc_predicate_header">
+            [or a b *x]<br />
+            [or a b : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Bitwise OR: *x = a OR b.<br />
+            Both arguments must be integers. The result is integer as well.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pi">
+        <div class="doc_predicate_header">
+            [pi *pi] [pi : *pi]
+        </div>
+        <div class="doc_predicate_body">
+            PI constant: e = 3.1415926535897931.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pow">
+        <div class="doc_predicate_header">
+            [pow a n x]<br />
+            [pow a n : x]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates either power or root or logarithm: x = a ^ n.<br />
+            Arguments can be either integer or double.
+            The result is double if any of the arguments is double, otherwise the result is integer.
+            It can also be used as a test.
+            Fails if x <= 0 or a = 1.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_rnd">
+        <div class="doc_predicate_header">
+            [rnd *rnd] [rnd : *rnd]<br />
+            [rnd *rnd min max] [rnd *rnd min : max]<br />
+            [rnd min *rnd max] [rnd min *rnd : max]<br />
+            [rnd min max *rnd] [rnd min max : *rnd]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates pseudo-random number.
+            The min and max values can be either integer or double.
+            The relationship is: min <= *rnd < max.
+            The default resolution (without min and max) is 24 bits.
+            Consequently the unrestricted result can range from 0 to 16,777,215.
+            To impose other restrictions use rnd_control.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_rnd_control">
+        <div class="doc_predicate_header">
+            [rnd_control out]<br />
+            [rnd_control a c]<br />
+            [rnd_control out a c]<br />
+            [rnd_control out resolution_shift a c]
+        </div>
+        <div class="doc_predicate_body">
+            Controls the pseudo-random number generator.
+            It works in accordance with the following formula:<br />
+            &emsp;&emsp;&emsp;mask = (1 << resolution) - 1;<br />
+            &emsp;&emsp;&emsp;rnd = (rnd * a + c) % mask;<br />
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_series">
+        <div class="doc_predicate_header">
+            [series [e-1 e-2 .... e-n] *permutation]<br />
+            [series [e-1 e-2 .... e-n] : *permutation]<br />
+            [series [] *perumation] [series [] : *permutation]<br />
+            [series from length step *permutation]<br />
+            [series from lengt step : *permutation]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a permutation of a list
+            or a randomly ordered series of numbers.
+            The <b>length</b> parameter must be integer.
+            Both <b>from</b> and <b>step</b> can be either integer or double.
+            If either <b>from</b> or <b>step</b> is double then the result will contain
+            double values.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sin">
+        <div class="doc_predicate_header">
+            [sin angle *x]<br />
+            [sin angle : *x]<br />
+            [sin *angle x]<br />
+            [sin *angle : x]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates either sine or arc-sine.
+            The input angle can be either integer or double.
+            If it is integer then it is assumed to be expressed in degrees.
+            If it is double then it is assumed to be expressed in radians.
+            The argument for arc-sine can be either double or integer (-1, 0, 1).
+            The result of arc-sine is always double and expressed in radians.
+            Fails if arc-sine argument is out of range.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sub">
+        <div class="doc_predicate_header">
+            [sub a b *x]<br />
+            [sub a b : *x]<br />
+            [sub a -a]<br />
+            [sub a : -a]
+        </div>
+        <div class="doc_predicate_body">
+            Subtraction: *x = a - b.<br />
+            The arguments can be either integer or double.
+            If both arguments are integers then the result is integer as well.
+            Otherwise the result is double.
+            If only two parameters are passed then it changes the sign.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sub1">
+        <div class="doc_predicate_header">
+            [sub1 x y]<br />
+            [sub1 x : y]
+        </div>
+        <div class="doc_predicate_body">
+            Subtracts 1 or 1.0 from x depending on the type of x. Can be used as a test.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sum">
+        <div class="doc_predicate_header">
+            [sum a b c]<br />
+            [sum a b : c]
+        </div>
+        <div class="doc_predicate_body">
+            Adds or subtract arguments to make sure a + b = c.
+            Only one of them can be a variable.
+            If two arguments are integers then the result will be integer.
+            If any of the arguments is double then the result will be double as well.
+            Can be used for tests.<br />
+            The sum can be also used for adding and subtracting texts.
+            Again it needs at least two parameters to be either symbol or text.
+            The result is always a text.
+            If used for testing the the third parameter is expected to be text.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_times">
+        <div class="doc_predicate_header">
+            [times a b c]<br />
+            [times a b : c]
+        </div>
+        <div class="doc_predicate_body">
+            Multiplies or divides arguments to make sure a * b = c.
+            Only one of them can be a variable.
+            If two arguments are integers then the result will be integer.
+            If any of the arguments is double then the result will be double as well.
+            Can be used for tests.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_trunc">
+        <div class="doc_predicate_header">
+            [trunc a b]<br />
+            [trunc a : b]
+        </div>
+        <div class="doc_predicate_body">
+            Truncates or converts between double and integer as follows:<br />
+            <li>[trunc double *i] => Truncates double and converts to integer.</li>
+            <li>[trunc integer *d] => Converts integer to double.</li>
+            <li>[trunc *d double] => Truncates double to double.</li>
+            <li>[trunc *d integer] => Converts integer to double.</li>
+            <li>[trunc double integer] => Truncation test.</li>
+            <li>[trunc integer double] => Conversion test.</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_xor">
+        <div class="doc_predicate_header">
+            [xor a b *x]<br />
+            [xor a b : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Bitwise XOR: *x = a XOR b.<br />
+            Both arguments must be integers. The result is integer as well.
+            It can be used as negation, i.e. XOR with -1.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="string_manipulation">String Manipulation Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_StringReplaceAll">
+        <div class="doc_predicate_header">
+            [StringReplaceAll string pattern replacement *x]<br />
+            [StringReplaceAll string pattern replacement : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Replaces all occurences of pattern within the string with replacement.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_StringReplaceOnce">
+        <div class="doc_predicate_header">
+            [StringReplaceOnce string pattern replacement *x]<br />
+            [StringReplaceOnce string pattern replacement : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Replaces all occurences of pattern within the string with replacement.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_StringToLower">
+        <div class="doc_predicate_header">
+            [StringToLower string *x]<br />
+            [StringToLower string : *x]<br />
+            [StringToLower *x string]<br />
+            [StringToLower *x : string]
+        </div>
+        <div class="doc_predicate_body">
+            Changes all characters within the string to lower case.
+            If the first parameter is variable, then changes all characters to upper case.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_StringToUpper">
+        <div class="doc_predicate_header">
+            [StringToUpper string *x]<br />
+            [StringToUpper string : *x]<br />
+            [StringToUpper *x string]<br />
+            [StringToUpper *x : string]
+        </div>
+        <div class="doc_predicate_body">
+            Changes all characters within the string to upper case.
+            If the first parameter is variable, then changes all characters to lower case.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="input_output">Input / Output Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_add_search_directory">
+        <div class="doc_predicate_header">
+            [add_search_directory "path"]<br />
+            [add_search_directory "dir-1" "dir-2" .... "dir-n"]<br />
+            [add_search_directory]
+        </div>
+        <div class="doc_predicate_body">
+            Adds path(s) to the collection of search paths.
+            The path, which was added last is the first location to look for files.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ARGS">
+        <div class="doc_predicate_header">
+            [ARGS : *args]
+        </div>
+        <div class="doc_predicate_body">
+            Retrives a list of text values representing command-line parameters.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_background">
+        <div class="doc_predicate_header">
+            [background bgcolour]<br />
+            [background : bgcolour]
+        </div>
+        <div class="doc_predicate_body">
+            Sets or retrieves the current background colour of the console.
+            The parameter should be either integer or variable.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_batch">
+        <div class="doc_predicate_header">
+            [batch "file_name.prb"]
+        </div>
+        <div class="doc_predicate_body">
+            Runs the specified file as if it was a series of interactive commands.
+            The file is expected to be terminated by [exit] command
+            (as if in a real interactive session).
+            If any of the commands fail or if the series of commands is not terminated with [exit]
+            then the entire batch fails.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_bootstrap">
+        <div class="doc_predicate_header">
+            [bootstrap "file_name"]
+        </div>
+        <div class="doc_predicate_body">
+            Works similar to <a href="#predicate_batch">batch</a>
+            with <a href="#predicate_shebang_reader">shebang_reader</a> used instead of <a href="#predicate_file_reder">file_reader</a>.
+            However, if it can't find the file specified, then it tries to work as <a href="#predicate_import">import</a>
+            and run optional instructions, if they are present.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_cd">
+        <div class="doc_predicate_header">
+            [cd]<br />
+            [cd "path"] [cd : "path"]<br />
+            [cd *path] [cd : *path]<br />
+        </div>
+        <div class="doc_predicate_body">
+            Changes current working directory or retrieves it.
+            Without parameter it is an equivalent to [cd ".."].
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_close_editor">
+        <div class="doc_predicate_header">
+            [close_editor]<br />
+            [close_editor x]<br />
+            [close_editor x y]
+        </div>
+        <div class="doc_predicate_body">
+            Closes the editor on embedded systems.
+            The meaning of the optional parameters depends on the embedded system..
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_command">
+        <div class="doc_predicate_header">
+            [command]
+        </div>
+        <div class="doc_predicate_body">
+            Starts an interactive session. It can be finished by [exit].
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_consult">
+        <div class="doc_predicate_header">
+            [consult "module-1" "module-2" .... "module-n" : *optional_instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Loads specified module(s) from file(s).
+            If a module is present then it will be removed first and the re-loaded.
+            It will appear as the second module after the root "user!".
+            If the module name has no extension, the default ".prc" extension will be used.
+            Fails immediately if a module can not be found anywhere.
+            The source code will be displayed on the console during the loading process.
+            To avoid it, <a href="#predicate_load">load</a> or <a href="#predicate_import">import</a> can be used instead.<br/>
+            The optional instructions will retrieve the list of commands
+            located between the end of the module and final dot.
+            They can be subsequently called.
+            However, this works only for the last module from the list.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_copy">
+        <div class="doc_predicate_header">
+            [copy "from" "to"]
+        </div>
+        <div class="doc_predicate_body">
+            Copies a file.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_create_module">
+        <div class="doc_predicate_header">
+            [create_module "name"]<br />
+            [create_module "name" "service.class"]<br />
+            [create_module]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a new module with the name specified.
+            Optionally a service class name can also be specified.
+            The new module will be added as the root module.
+            All newly created atoms will be placed in this module.
+            Typically it should be swapped with the "user!" module after completion
+            by calling create_module without any parameters.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_dir">
+        <div class="doc_predicate_header">
+            [dir]<br />
+            [dir "path"]<br />
+            [dir *result]<br />
+            [dir "path" *result]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves and/or displays the content of a folder on a file system.
+            The "path" parameter specifies the directory relative to the current working directory.
+            If the "path" is omitted then the current working directory is used.
+            The *result is the retrieved content.
+            If the *result is omitted then the content is displayed rather than retrieved.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_DIR">
+        <div class="doc_predicate_header">
+            [DIR "path" : *result]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves the content of the folder on the file system,
+            which is specified by the "path".
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_edit">
+        <div class="doc_predicate_header">
+            [edit "file_name"]
+        </div>
+        <div class="doc_predicate_body">
+            Opens a file for editing.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_erase">
+        <div class="doc_predicate_header">
+            [erase "file-1" "file-2" .... "file-n"]<br />
+            [erase]
+        </div>
+        <div class="doc_predicate_body">
+            Deletes all specified files.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_erase_directory">
+        <div class="doc_predicate_header">
+            [erase_directory "folder-1" "folder-2" .... "folder-n"]<br />
+            [erase_directory]
+        </div>
+        <div class="doc_predicate_body">
+            Deletes all specified folders. It may not be able to delete folders, which are not empty.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_execute">
+        <div class="doc_predicate_header">
+            [execute "command"]
+        </div>
+        <div class="doc_predicate_body">
+            Executes system shell command.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_exit">
+        <div class="doc_predicate_header">
+            [exit]
+        </div>
+        <div class="doc_predicate_body">
+            Stops the interactive session.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_file_reader">
+        <div class="doc_predicate_header">
+            [file_reader *reader "file_name.extension"]<br />
+            ===========================================<br />
+            [*reader *term] => reads a prolog term<br />
+            [*reader "word" *text] => reads word<br />
+            [*reader "line" *text] => reads entire line<br />
+            [*reader "string" *text] => reads text consisting of specified characters<br />
+            [*reader] => closes the file
+        </div>
+        <div class="doc_predicate_body">
+            Creates a file reader by attaching a machine clause to a symbol.
+            If variable is passed instead of a symbol, then anonymous symbol is created.<br />
+            The reader can read from the file the following objects:
+            <li>Prolog terms.</li>
+            <li>Single words and/or separators.</li>
+            <li>Lines of text.</li>
+            <li>Texts consisting of specified characters.</li><br />
+            Without any parameters the reader closes the file and releases the machine clause binding.
+            If anonymous symbol is garbage collected then the file is also closed (and machine binding released as well).
+            <br/>
+            <b>Note:</b> use <a href="#predicate_shebang_reader">shebang_reader</a> to filter-out the possible initial shebang sequence (#!).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_file_writer">
+        <div class="doc_predicate_header">
+            [file_writer *writer "file_name.extension"]<br />
+            ===========================================<br />
+            [*writer a b c d e f] => writers parameters to the file<br />
+            [*writer "text" ....] => writers text to the file<br />
+            [*writer 100 101 102 ....] => writes ASCII characters to the file<br />
+            [*writer [a b c ....] ....] => writes Prolog terms (a b c ....) to the file<br />
+            [*writer] => closes the file.
+        </div>
+        <div class="doc_predicate_body">
+            Creates a file writer by attaching a machine clause to a symbol.
+            if variable is passed instead of a symbol, then anonymous symbol is created.<br />
+            The writer outputs its parameters into the file in textual form.
+            The textualising depend on the parameters:
+            <li>A text is written without quotation marsk.</li>
+            <li>Numbers are written as ASCII characters.
+                Numbers greater than 255 are written as a sequence of 8-bit ASCII characters.
+                Numbers lower than 0 are written as positive UTF-8 characters.</li>
+            <li>Content of a list is written as separate Prolog terms.</li><br />
+            Without any parameters the writer closes the file and releases the machine clause binding.
+            If anonymous symbol is garbage collected then the file is also closed (and machine binding released as well).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_foreground">
+        <div class="doc_predicate_header">
+            [foreground fgcolour]<br />
+            [foreground : fgcolour]
+        </div>
+        <div class="doc_predicate_body">
+            Sets or retrieves the current pen (or foreground) colour of the console.
+            The parameter should be either integer or variable.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_get_volume_serial_number">
+        <div class="doc_predicate_header">
+            [get_volume_serial_number *text]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves serial number of embedded platform (if exist).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_import">
+        <div class="doc_predicate_header">
+            [import "module-1" "module-2" .... "module-n" : *optional_instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Loads specified module(s) from file(s).
+            If a module is present then it will not be re-loaded.
+            If loaded then it will appear as the second module after the root "user!".
+            If the module name has no extension, the default ".prc" extension will be used.
+            Fails immediately if a module can not be found anywhere.<br/>
+            The optional instructions will retrieve the list of commands
+            located between the end of the module and final dot.
+            They can be subsequently called.
+            However, this works only for the last module from the list.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_list">
+        <div class="doc_predicate_header">
+            [list] [list *x] [list : *x]<br />
+            [list command] [list command *x] [list command : *x]<br />
+            [list "module"] [list "module" *x] [list "module" : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Behaviour of <b>list</b> depends on the form of the parameters.<br />
+            First parameter:<br />
+            <li>none: gets the list of loaded modules</li>
+            <li>text: gets the list of atoms defined in a module</li>
+            <li>atom: gets the list of clauses defining the atom</li><br />
+            Second parameter:<br />
+            <li>none: the list is displayed in the console</li>
+            <li>variable (*x): the list is returned as text</li>
+            <li>variable tail (:*x): the list is returned as a Prolog term</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_load">
+        <div class="doc_predicate_header">
+            [load "module-1" "module-2" .... "module-n" : *optional_instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Loads specified module(s) from file(s).
+            If a module is present then it will be removed first and then re-loaded.
+            It will appear as the second module after the root "user!".
+            If the module name has no extension, the default ".prc" extension will be used.
+            Fails if the module can not be found anywhere.<br/>>
+            The optional instructions will retrieve the list of commands
+            located between the end of the module and final dot.
+            They can be subsequently called.
+            However, this works only for the last module from the list.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_machine_type">
+        <div class="doc_predicate_header">
+            [machine_type atom *x]<br />
+            [machine_type atom : *x]<br />
+            [machine_type atom type_atom]<br />
+            [machine_type atom : type_atom]<br />
+            [machine_type]
+        </div>
+        <div class="doc_predicate_body">
+            Checke or retrieves machine code type.<br />
+            It succeeds if the <b>atom</b> has machine clause attached and if it is of the same type as the machine clause attached to the <b>type_atom</b>.
+            If <b>type_atom</b> is not provided, then the type name string of the <b>atom's</b> machine clause is retrieved.
+            The version without <b>type_atom</b> checks if the <b>atom's</b> machine clause is of <b>machine_type</b>.<br />
+            Explanation:<br />
+            Each machine clause reports its name as a unique pointer to <b>char</b> through virtual <b>codeName</b> method.
+            Also, each machine clause can be interrogated if it is of a particular type, by calling another virtual <b>isTypeOf</b> method.
+            In essence, if <b>isTypeOf</b> return true, then it is safe to type cast machine clause to different type (as it is of the same type).<br />
+            Typically, the <b>type_atom's</b> machine clause returns a name, but it fails with <b>isTypeOf</b>, hence it is used only for checking the type.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_make_directory">
+        <div class="doc_predicate_header">
+            [make_directory "folder-1" "folder-2" .... "folder-n"]<br />
+            [make_directory]
+        </div>
+        <div class="doc_predicate_body">
+            Creates all specified folders.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_move">
+        <div class="doc_predicate_header">
+            [move "from" "to"]
+        </div>
+        <div class="doc_predicate_body">
+            Moves (or renames) a file.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_nl">
+        <div class="doc_predicate_header">
+            [nl]
+        </div>
+        <div class="doc_predicate_body">
+            Prints a new line.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_object_counter">
+        <div class="doc_predicate_header">
+            [object_counter]<br />
+            [object_counter *x]
+        </div>
+        <div class="doc_predicate_body">
+            Displays or returns statistical information about all the objects currently allocated in the memory.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_open_editor">
+        <div class="doc_predicate_header">
+            [open_editor]<br />
+            [open_editor x]<br />
+            [open_editor x y]
+        </div>
+        <div class="doc_predicate_body">
+            Opens the editor on embedded systems.
+            The meaning of the optional parameters depends on the embedded system..
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_operating_system">
+        <div class="doc_predicate_header">
+            [operating_system "name"]<br />
+            [operating_system *name]<br />
+            [operating_system : *name]
+        </div>
+        <div class="doc_predicate_body">
+            Checks or retrieves the type of underlying operating system.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pp">
+        <div class="doc_predicate_header">
+            [pp : *parameters]
+        </div>
+        <div class="doc_predicate_body">
+            Prints all its parameters as Prolog terms. In particular, texts will be enclosed by quotation marks.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pr">
+        <div class="doc_predicate_header">
+            [pr *term]
+        </div>
+        <div class="doc_predicate_body">
+            Reads Prolog term from the console.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_preprocessor">
+        <div class="doc_predicate_header">
+            [preprocessor] [preprocessor []]<br />
+            [preprocessor atom]<br />
+            [preprocessor *atom] [preprocessor : *atom]
+        </div>
+        <div class="doc_predicate_body">
+            Sets or gets preprocessor.
+            Without parameters or with empty list, it removes preprocessor.
+            The preprocessor itself is a relation, which takes two parameters:
+            first is the original clause (or list of calls), the second is the result of processing.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_prompt">
+        <div class="doc_predicate_header">
+            [prompt "=> "]<br />
+            [prompt *x] [prompt : *x]
+        </div>
+        <div class="doc_predicate_body">
+            Sets or gets the current prompt, which is used by command console.
+            Default value is usually "".
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pt">
+        <div class="doc_predicate_header">
+            [pt : *parameters]
+        </div>
+        <div class="doc_predicate_body">
+            Prints the true representation of all parameters. In particular, lists will be displayed as nested pairs.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_query_stack">
+        <div class="doc_predicate_header">
+            [query_stack]
+        </div>
+        <div class="doc_predicate_body">
+            Prints the content of the query stack on the console.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_read">
+        <div class="doc_predicate_header">
+            [read *text]
+        </div>
+        <div class="doc_predicate_body">
+            Skips whitespaces and then reads the input text from the console, until a whitespace is detected.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_load_history">
+        <div class="doc_predicate_header">
+            [load_history]<br />
+            [load_history size]<br />
+            [load_history "file_name"]<br />
+            [load_history size "file_name"]<br />
+            [load_history "file_name" size]
+        </div>
+        <div class="doc_predicate_body">
+            Loads the previously saved history of commands for interactive session.
+            The size specifies the number of commands.
+            The "file_name" specifies the file in which history is stored.
+            If no parameters are passed (default option) then the behaviour is OS specific.
+            The functionality depends on the Operating System.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_readln">
+        <div class="doc_predicate_header">
+            [readln *text]
+        </div>
+        <div class="doc_predicate_body">
+            Skips whitespaces and then reads the input text from the console, until a new line is detected.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_relativise_path">
+        <div class="doc_predicate_header">
+            [relativise_path path *relative]<br />
+            [relativise_path path : *relative]<br />
+            [relativise_path path working_directory *relative]<br />
+            [relativise_path path working_directory : *relative]
+        </div>
+        <div class="doc_predicate_body">
+            Calculates path, which is relative to working directory.
+            If working directory is omitted then the current working directory is used.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_reload">
+        <div class="doc_predicate_header">
+            [reload]
+        </div>
+        <div class="doc_predicate_body">
+            Re-loads the second module after the root (i.e. the last loaded module).
+            It assumes that the name of the module is identical
+            as the name of the source file with ".prc" extension.
+            If the source file can not be found anywhere
+            then the module is unloaded and not loaded.<br />
+            Useful in construction and debugging process.
+            Load the source, test, make changes, re-load, test, make changes, re-load again, etc.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_remove_module">
+        <div class="doc_predicate_header">
+            [remove_module "name"]<br />
+            [remove_module "m-1" "m-2" .... "m-n"]<br />
+            [remove_module]
+        </div>
+        <div class="doc_predicate_body">
+            Removes module(s) specified by name(s).
+            Fails if any of the modules does not exist or could not be removed.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_save_history">
+        <div class="doc_predicate_header">
+            [save_history]<br />
+            [save_history size]<br />
+            [save_history "file_name"]<br />
+            [save_history size "file_name"]<br />
+            [save_history "file_name" size]
+        </div>
+        <div class="doc_predicate_body">
+            Saves the history of commands for interactive session.
+            The size specifies the number of commands.
+            The "file_name" specifies the file in which history is stored.
+            If no parameters are passed (default option) then the behaviour is OS-specific.
+            The functionality depends on the Operating System.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_screen_coordinates">
+        <div class="doc_predicate_header">
+            [screen_coordinates x y]
+        </div>
+        <div class="doc_predicate_body">
+            Controls the screen coordinates of the editor on embedded system.
+            The exact behaviour depends on the embedded system.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_search_directories">
+        <div class="doc_predicate_header">
+            [search_directories] => display<br />
+            [search_directories []] => erase<br />
+            [search_directories *x] => retrive<br />
+            [search_directories ["dir-1" "dir-2" .... "dir-n"]] => set
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves the collection of search paths.
+            It can also reset it or set it.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_security_check">
+        <div class="doc_predicate_header">
+            [security_check]
+        </div>
+        <div class="doc_predicate_body">
+            On embedded platforms checks if serial number and security key match.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_set_captions">
+        <div class="doc_predicate_header">
+            [set_uap32_captions] [set_standard_captions]<br />
+            [set_edinburgh_captions] [set_marseille_captions]<br />
+            [set_functional_captions]
+        </div>
+        <div class="doc_predicate_body">
+            Controls the behaviour of lexical and syntax analyser.
+            This feature is experimental. It is recommended to use uap32 captions at all times (default option).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_set_machine">
+        <div class="doc_predicate_header">
+            [set_machine atom "machine"]<br />
+            [set_machine atom "module" "machine"]
+        </div>
+        <div class="doc_predicate_body">
+            Adds machine clause to the atom (symbol).
+            The machine code is searched in the module specified by module's name.
+            If no module was specified then it searches machine code in the root module.
+            Fails if machine code can not be found or applied (i.e. the symbol has already some definitions attached).
+            Note: machine binding can only be removed if the binding itself allows for it.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_shebang_reader">
+        <div class="doc_predicate_header">
+            [shebang_reader *reader "file_name.extension"]
+        </div>
+        <div class="doc_predicate_body">
+            Works identical to <a href="#predicate_file_reader">file_reader</a>.
+            However, it skips the initial shebang line (beginning with #! character sequence) if present.
+            Very good for Unix/Linux scripting.
+            It is, in fact, used by <a href="#predicate_bootstrap">bootstrap</a> processor.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_show">
+        <div class="doc_predicate_header">
+            [show : parameters]
+        </div>
+        <div class="doc_predicate_body">
+            Convenient output predicate in one line.
+            Display parameters in a fashion depending on their type:
+            <li>Texts are displayed using <b>write</b>.</li>
+            <li>All other types are displayed using <b>pp</b>.</li>
+            <li>At the end a newline character is inserted.</li>
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[show] [nl] /]<br />
+            [[show *text : *show] [is_text *text] [write *text] / [show : *show]]<br />
+            [[show *x : *show] [pp *x] / [show : *show]]<br />
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_write">
+        <div class="doc_predicate_header">
+            [write : *parameters]
+        </div>
+        <div class="doc_predicate_body">
+            Displays all its parameters.
+            The exact display format depends on the type of the parameter:
+            <li>Texts are displayed without quotation marks.</li>
+            <li>Atoms are displayed exactly as they are.</li>
+            <li>Integers are displayed as ASCII characters.
+                Numbers greater than 255 are displayed as a sequence of ASCII characters.
+                Numbers lower than 0 are displayed as positive UTF-8 characters.</li>
+            <li>Content of lists are displayed using <b>pp</b>.</li>
+            <li>Parameters of other types are ignored.</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="###">
+        <div class="doc_predicate_header">
+            ###
+        </div>
+        <div class="doc_predicate_body">
+            ###
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="clause_atome">Clause and Atome Manipulation Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_addcl">
+        <div class="doc_predicate_header">
+            [addcl [[relation : *parameters] : *body] ]<br />
+            [addcl [[relation : *parameters] : *body] index]
+        </div>
+        <div class="doc_predicate_body">
+            Adds a new clause as the last clause of the relation
+            or at the position specified by <b>index</b>.
+            If the index is out of range (too low, negative or too high)
+            then the clause will be added as either first or last.
+            Fails if relation is <b>protected</b>.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_addcl0">
+        <div class="doc_predicate_header">
+            [addcl0 [[relation : *parameters] : *body] ]
+        </div>
+        <div class="doc_predicate_body">
+            Adds a new clause as the first clause of the relation.
+            Fails if relation is <b>protected</b>.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_auto_atoms">
+        <div class="doc_predicate_header">
+            [auto_atoms]
+        </div>
+        <div class="doc_predicate_body">
+            Modifies the behaviour of Prolog reader.
+            If the reader encounters an unknown symbol (atom) then it is automatically created (in the root module).
+            See also: <a href="#predicate_scripted_atoms">scripted_atoms</a>.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_cl">
+        <div class="doc_predicate_header">
+            [cl index [[atom : parameters] : body]]<br />
+            [cl [[atom : parameters] : body]]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves a <b>clause</b>, which is optionally specified by index.
+            On backtracking retrieves the next clause
+            if index is variable or if index is not supplied.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[cl *x]/[cl 0 *y *x]]<br />
+            [[cl *x *y]/[cl 0 *x *y]]<br />
+            [[cl *x *x [[*a:*b]:*c]][CL *x *a [[*a:*b]:*c]]]<br />
+            [[cl *x *y [[*a:*b]:*c]][add *x 1 *x2]/[CL *x2 *a *X]<br />
+            &emsp;&emsp;&emsp;[cl *x2 *y [[*a:*b]:*c]]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_CL">
+        <div class="doc_predicate_header">
+            [CL atom index : *clause] [CL atom index *clause]<br />
+            [CL index atom : *clause] [CL index atom *clause]<br />
+            [CL atom : *index] [CL atom *index]<br />
+            [CL atom : index] [CL atom index]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves a <b>clause</b> attached to the <b>atom</b> and specified by <b>index</b>.
+            It also retrieves or checks the total number of clauses attached to the <b>atom</b>
+            (ZERO if the atom is <b>free</b>).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_create_atom">
+        <div class="doc_predicate_header">
+            [create_atom atom]<br />
+            [create_atom *atom]<br />
+            [create_atom "name"]<br />
+            [create_atom "name" *atom] [create_atom "name" : *atom]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a new symbol, or checks if the supplied argument is an existing symbol.
+            This relation has several forms:
+            <li><b>with symbol</b> checks if it is an existing symbol</li>
+            <li><b>with var</b> creates an anonymous symbol in a form of <b>&lt;Atom:=004D9C98&gt;</b></li>
+            <li><b>with text</b> creates a new symbol and places it into the root directory</li>
+            <li><b>with text and var</b> creates an anonymous symbol with specified name</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_create_atoms">
+        <div class="doc_predicate_header">
+            [create_atoms a1 a2 .... an]<br />
+            [create_atoms *a1 *a2 .... *an]
+        </div>
+        <div class="doc_predicate_body">
+            Creates anonymous atoms or check if supplied arguments are existing symbols.
+            Fails in all other cases.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_delallcl">
+        <div class="doc_predicate_header">
+            [delallcl atom]
+        </div>
+        <div class="doc_predicate_body">
+            Deletes all clauses attached to atom.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[delallcl *a] [DELCL 0 *a] / [delallcl *a]]<br />
+            [[delallcl *a]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_delcl">
+        <div class="doc_predicate_header">
+            [delcl [[atom : parameters] : body]]
+        </div>
+        <div class="doc_predicate_body">
+            Deletes a clause, which matches the parameter.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[delcl [[*a:*b]:*c]][cl *x [[*a:*b]:*c]][DELCL *x *a]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_DELCL">
+        <div class="doc_predicate_header">
+            [DELCL index atom] [DELCL atom index]
+        </div>
+        <div class="doc_predicate_body">
+            Deletes a <b>clause</b> attached to the <b>atom</b> and specified by the <b>index</b>.
+            Fails if the <b>atom</b> is <b>protected</b> or if the <b>clause</b> does not exist.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_let">
+        <div class="doc_predicate_header">
+            [let atom selector : value]
+        </div>
+        <div class="doc_predicate_body">
+            Obsolete method for simulating global variables (with optional selector for tables).<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[let *name *selector : *value]
+            &emsp;&emsp;&emsp;[overwrite [[*name *selector : *] : *] [[*name *selector : *value]]]
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_overwrite">
+        <div class="doc_predicate_header">
+            [overwrite *old *new]
+        </div>
+        <div class="doc_predicate_body">
+            Replaces an old clause with the new one.
+            Fails if the <b>atom</b> is <b>protected</b> or if the <b>clause</b> does not exist.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[overwrite [[*a:*b]:*c] [[*a:*h]:*i]]<br />
+            &emsp;&emsp;&emsp;[cl *x [[*a:*b]:*c]]<br />
+            &emsp;&emsp;&emsp;[OVERWRITE *x [[*a:*h]:*i]]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_OVERWRITE">
+        <div class="doc_predicate_header">
+            [OVERWRITE index [[atom : parameters] : body]]
+        </div>
+        <div class="doc_predicate_body">
+            Replaces old clause attached to <b>atom</b> and specified by <b>index</b>
+            with the new definition.
+            Fails if the <b>atom</b> is <b>protected</b> or if the <b>clause</b> does not exist.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_search_atom">
+        <div class="doc_predicate_header">
+            [search_atom "name" *atom]<br />
+            [search_atom "name" : *atom]<br />
+            [search_atom "module" "name" *atom]<br />
+            [search_atom "module" "name" : *atom]
+        </div>
+        <div class="doc_predicate_body">
+            Finds a symbol.
+            If module name is specified then it searches only this particular module.
+            Otherwise it searches in all modules.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_search_atom_c">
+        <div class="doc_predicate_header">
+            [search_atom_c "name" *atom]<br />
+            [search_atom_c "name" : *atom]<br />
+            [search_atom_c "module" "name" *atom]<br />
+            [search_atom_c "module" "name" : *atom]
+        </div>
+        <div class="doc_predicate_body">
+            Works similar to <a href="#predicate_search_atom">search_atom</a>.
+            However, if symbol does not exist then it is created.
+            If the module was specified then the new symbol is created in the same module.
+            Otherwise, it creates the new symbol in the first modules (typically in the "user!").
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_scripted_atoms">
+        <div class="doc_predicate_header">
+            [scripted_atoms]
+        </div>
+        <div class="doc_predicate_body">
+            Modifies the behaviour of Prolog reader.
+            All symbols must be explicitly created (by <a href="predicate_create_atom">create_atom</a>) or declared in a separate module.
+            If the reader encounters an unknown symbol (atom) then it fails.
+            See also: <a href="#predicate_auto_atoms">auto_atoms</a>.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="unique_atoms">
+        <div class="doc_predicate_header">
+            [unique_atoms]<br />
+            [unique_atoms *list]<br />
+            [unique_atoms *list atom]<br />
+            [unique_atoms *list "directory"]<br />
+        </div>
+        <div class="doc_predicate_body">
+            Searches for symbols with duplicated names.<br />
+            Parameters can be either variable, symbol or text:<br />
+            If there is a variable then unique_atoms never fails, but returns the list of duplicates ([] if none found).<br />
+            If there is a symbol, then unique_atoms searches all directories for duplicates.<br />
+            If there is a text, then unique_atoms checks if any symbol from the specified directory has a duplicate elsewhere.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="term">Term Manipulation Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_e32">
+        <div class="doc_predicate_header">
+            [e32 *number]<br />
+            [e32 *number lsb]<br />
+            [e32 *number lsb msb]<br />
+            [e32 *number llsb lmsb msb]<br />
+            [e32 *number llsb lmsb mlsb mmsb]<br />
+            [e32 number *llsb *lmsb *mlsb *mmsb]
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a 32-bit integer from supplied 8-bit components
+            or extracs 4 8-bit components from a 32-bit integer.
+            The least significant byte is first (llsb), so it is possible to
+            supply as many 8-bit components as necessary.
+            (The result will be ZERO if no components are passed.)
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_has_machine">
+        <div class="doc_predicate_header">
+            [has_machine atom]<br />
+            [has_machine "module"]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if a symbol has clauses attached or if a module has a service class attached.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_atom">
+        <div class="doc_predicate_header">
+            [is_atom atom]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is a symbol (atom).
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_double">
+        <div class="doc_predicate_header">
+            [is_double 127.0]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is a number with fractional part.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_head">
+        <div class="doc_predicate_header">
+            [is_head head]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is a pointer to a location in memory.
+            This is more of a legacy code as these pointers are not generated
+            by any of the standard predicates.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_integer">
+        <div class="doc_predicate_header">
+            [is_integer 127]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is a integer number.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_number">
+        <div class="doc_predicate_header">
+            [is_number value]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is either an integer of fractional number.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_text">
+        <div class="doc_predicate_header">
+            [is_text "text"]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameters is textual.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_is_var">
+        <div class="doc_predicate_header">
+            [is_var *variable]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the supplied parameter is a variable.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_text_list">
+        <div class="doc_predicate_header">
+            [text_list "sonda" *ASCII]<br />
+            [text_list *text [115 111 110 100 97]]
+        </div>
+        <div class="doc_predicate_body">
+            Converst text into a list of ASCII numbers and vice-versa.
+        </div>
+    </a>
+</div>
+
+  <div class="doc_predicate">
+    <a id="predicate_text_term">
+      <div class="doc_predicate_header">
+        [text_term "1 2 3" : *list]<br />
+        [text_list *text 1 2 3]
+      </div>
+      <div class="doc_predicate_body">
+        Interprets text as a series of terms and vice versa.
+        Please note, if only the first term from the string is required,
+        then an open ended form may be used (i.e. [text_term "1 2 3" *x : *]).
+      </div>
+    </a>
+  </div>
+
+  <div class="doc_predicate">
+    <a id="###">
+        <div class="doc_predicate_header">
+            ###
+        </div>
+        <div class="doc_predicate_body">
+            ###
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="multithreading">Multithreading Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_crack">
+        <div class="doc_predicate_header">
+            [crack : commands]<br />
+            [crack]
+        </div>
+        <div class="doc_predicate_body">
+            Starts a new thread using <b>commands</b>.
+            In other words: splits (or cracks) the current thread into two.
+            If no commands are specified then nothing will happen.
+            In particular, a new thread (with empty instructions) will not be created.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_critical_section">
+        <div class="doc_predicate_header">
+            [critical_section [atom : parameters] : commands]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a new clause attached to <b>atom</b>, which is guarded internally by an anonymouse mutex.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[critical_section [*atom : *parameters] : *commands]<br />
+            &emsp;&emsp;&emsp;[is_atom *atom]<br />
+            &emsp;&emsp;&emsp;[mutex *m]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom : *parameters] [*m wait] [TRY : *commands] [*m signal] [wait 0]]]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_monitor">
+        <div class="doc_predicate_header">
+            [monitor atom]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a monitor guarded internally by an anonymous mutex.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[critical_section [*atom : *parameters] : *commands]<br />
+            &emsp;&emsp;&emsp;[is_atom *atom]<br />
+            &emsp;&emsp;&emsp;[mutex *m]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom : *parameters] [*m wait] [TRY : *commands] [*m signal] [wait 0]]]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_msemaphore">
+        <div class="doc_predicate_header">
+            [msemaphore s index]<br />
+            [msemaphore *s index]<br />
+            [msemaphore s]<br />
+            [msemaphore *s]<br />
+            ==========
+            [s wait] => wait for semaphore<br />
+            [s enter] => fail if semaphore closed<br />
+            [s signal] => signal the semaphore<br />
+            [s] => close / destroy
+        </div>
+        <div class="doc_predicate_body">
+            Works identically as <a href="#predicate_semaphore">semaphore</a>
+            with the difference that it is emulated with an internal mutex.
+            It is recommended to use <b>semaphore</b> rather than <b>msemaphore</b>.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_mutex">
+        <div class="doc_predicate_header">
+            [mutex m]<br />
+            [mutex *m]<br />
+            ==========
+            [m wait] => wait for mutex<br />
+            [m enter] => fail if mutex unavailable<br />
+            [m signal] => release the mutex<br />
+            [m] => close / destroy
+        </div>
+        <div class="doc_predicate_body">
+            Creates a mutex. If variables is passed instead of an atom
+            then an anonymous atom is constructed.
+            Once created the following operations can be performed on a mutex:<br />
+            <li><b>wait</b> (take the mutex or wait for it)</li>
+            <li><b>enter</b> (take the mutex if it is free or fail otherwise)</li>
+            <li><b>signal</b> (release the mutex)</li>
+            <li><b>close</b> (destroy the mutex)</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_semaphore">
+        <div class="doc_predicate_header">
+            [semaphore s index]<br />
+            [semaphore *s index]<br />
+            [semaphore s]<br />
+            [semaphore *s]<br />
+            ==========<br />
+            [s wait] => wait for semaphore<br />
+            [s enter] => fail if semaphore closed<br />
+            [s signal] => signal the semaphore<br />
+            [s] => close / destroy
+        </div>
+        <div class="doc_predicate_body">
+            Creates a semaphore. If variables is passed instead of an atom
+            then an anonymous atom is constructed.
+            The index parameter controls the initial count of the semaphore.
+            If not present then the semaphore is initialised with one.
+            Once created the following operations can be performed on a semaphore:<br />
+            <li><b>wait</b> (wait for semaphore)</li>
+            <li><b>enter</b> (check if semaphore is open or fail otherwise)</li>
+            <li><b>signal</b> (signal the semaphore)</li>
+            <li><b>close</b> (destroy the semaphore)</li>
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_task">
+        <div class="doc_predicate_header">
+            [task t [entry-1 entry-2 .... entry-n] : commands]<br />
+            ===========================<br />
+            <b>from external thread:</b><br />
+            [t enter entry-x : parameters]<br />
+            [t] => close / destroy (if the thread stopped and did not remove its own definitions)<br />
+            <b>from internal commands:</b><br />
+            [*task accept atom [*parameters:...] : *body]<br />
+            [SELECT<br />
+            &emsp;&emsp;&emsp;[.... conditions ..... [*task select atom [*parameters:...] : *body] ..... body .... ]<br />
+            &emsp;&emsp;&emsp;[.... conditions ..... [*task select sonda [*parameters:...] : *body] ..... body .... ]<br />
+            &emsp;&emsp;&emsp;[.... conditions ..... [*task select extra [*parameters:...] : *body] ..... body .... ]<br />
+            &emsp;&emsp;&emsp;[[*task wait]]     ; this prevents active pooling by a waiting for internal semaphore<br />
+            ]<br />
+            [t] (and possibly [timeout]) => close / destroy
+        </div>
+        <div class="doc_predicate_body">
+            Checks all possible solutions to <b>*commands</b> with implicit fail.
+            Hence, variables are not instantiated.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[task accept *atom *trigger []]]<br />
+            [[task accept *atom *trigger [*entry : *entries]]<br />
+            &emsp;&emsp;&emsp;[semaphore *enter 0] [semaphore *accept 0] [semaphore *complete 0]<br />
+            &emsp;&emsp;&emsp;[var *data]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom accept *entry : *body]<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*enter wait]                                  ; wait for the enter trigger<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*data *body]                                  ; transfer parameters and body<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*accept signal]                               ; indicate transfer complete<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*complete wait]                               ; wait for completion on the other side<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom enter *entry : *parameters]<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*enter signal]                                ; trigger entry<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*trigger signal]                              ; just in case if the task is suspended on default wait<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*accept wait]                                 ; wait for parameters and body<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*data : *d]                                   ; get them<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[TRY [eq [*parameters : *body] *d] : *body]    ; and perform<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*complete signal]                             ; indicate the completion<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom select *entry : *body]<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*enter enter]                                 ; main trigger has already been passed, so just wait for the particular trigger<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*data *body]                                  ; transfer parameters and body<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*accept signal]                               ; indicate transfer complete<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[*complete wait]                               ; wait for completion on the other side<br />
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;]<br />
+            &emsp;&emsp;&emsp;/ [task accept *atom *trigger *entries]<br />
+            ]<br />
+            [[task *atom *entries : *commands]<br />
+            &emsp;&emsp;&emsp;[create_atom *atom] [semaphore *trigger 0]<br />
+            &emsp;&emsp;&emsp;[task accept *atom *trigger *entries]<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom wait]   [*trigger wait]]   ]                ; stop actively pooling until trigger<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom signal] [*trigger signal]] ]                ; re-activate active pooling<br />
+            &emsp;&emsp;&emsp;[addcl [[*atom]        [delallcl *atom]]  ]                ; remove all task definitions<br />
+            &emsp;&emsp;&emsp;[crack : *commands]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_timeout">
+        <div class="doc_predicate_header">
+            [timeout miliseconds]<br />
+            [timeout miliseconds : commands]<br />
+            [timeout]<br />
+            [timeout : commands]<br />
+            [timeout []]
+        </div>
+        <div class="doc_predicate_body">
+            Stops current thread after specified amount of <b>miliseconds</b> and perform a series of <b>commands</b>.
+            The <b>commands</b> may not be specified.
+            If no <b>milliseconds</b> are provided then the thread stops immediately (and commands are performed if specified).
+            Empty list in place of <b>milliseconds</b> cancels the timeout.<br />
+            <b>Note:</b> every subsequent call to timeout cancels the possible effecto for the previous calls.<br />
+            <b>Note:</b> if called from the main thread, then it stops the program (immediately if no timeout specified).
+            In this case other threads may crash.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_timestamp">
+        <div class="doc_predicate_header">
+            [timestamp stamp year month day dayOfYear dayOfWeek hour minute second]<br />
+            [timestamp stamp : *]
+        </div>
+        <div class="doc_predicate_body">
+            Converts from timestamp to date-time and from date-time to timestamp.
+            If partial information is provided (no timestamp, no year, no hour, etc.)
+            then it will be filled with current time values.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_wait">
+        <div class="doc_predicate_header">
+            [wait milliseconds]<br />
+            [wait *current_time]<br />
+            [wait : *current_time]
+        </div>
+        <div class="doc_predicate_body">
+            Waits specified number of milliseconds
+            or return the current system time.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="metalogical">Metalogical Predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_ACCUMULATOR">
+        <div class="doc_predicate_header">
+            [ACCUMULATOR accu]<br />
+            ==================<br />
+            [accu term] => adds term as head<br />
+            [accu : *term] => retrieves the current list<br />
+            [accu] => destroys the accumulator
+        </div>
+        <div class="doc_predicate_body">
+            Constructs an accumulator.
+            If accu is a variable then an anonymous atom is created.<br />
+            The accumulator is initially an empty list.
+            Every time a value is passed to the accumulator,
+            it is added as the head of the list.<br />
+            <b>Note:</b> ACCUMULATOR takes special care with numbering variables, which takes extra processing time.
+            If variables are not going to be accumulated then <a href="#predicate_STACK">STACK</a> can be used instead.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ALL">
+        <div class="doc_predicate_header">
+            [ALL : *commands]
+        </div>
+        <div class="doc_predicate_body">
+            Checks all possible solutions to <b>*commands</b> with implicit fail.
+            Hence, variables are not instantiated.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[ALL :*o][res : *o] fail]<br />
+            [[ALL :*]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_append">
+        <div class="doc_predicate_header">
+            [APPEND list-1 list-2 list-1+2]
+        </div>
+        <div class="doc_predicate_body">
+            Joins two lists together. Can be used for splitting lists and checking.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[APPEND [] *l *l]]<br />
+            [[APPEND [*head : *tail] *l [*head : *new]]/<br />
+	        &emsp;&emsp;&emsp;[APPEND *tail *l *new]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ARRAY">
+        <div class="doc_predicate_header">
+            [ARRAY array dimension-1 dimension-2 .... dimension-n]<br />
+            ==================<br />
+            [array index-1 index-2 .... index-n value] => set value<br />
+            [array index-1 index-2 .... index-n : *value] => get value<br />
+            [array] => destroys the array
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a multi-dimensional array.
+            If array is a variable then an anonymous atom is created.<br />
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_AT">
+        <div class="doc_predicate_header">
+            [AT index *element list]
+        </div>
+        <div class="doc_predicate_body">
+            Retrieves an element from the list located at index position.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_CONSTANT">
+        <div class="doc_predicate_header">
+            [CONSTANT const value]<br />
+            ==================<br />
+            [const : *term] => retrieves the value
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a constant.
+            If const is a variable then an anonymous atom is created.<br />
+            Once created the constant can not be destroyed.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_dec">
+        <div class="doc_predicate_header">
+            [dec variable]<br />
+            [dec variable decrement]
+        </div>
+        <div class="doc_predicate_body">
+            Decrements variable by decrement.
+            If the decrement is not specified the decrements by one.
+            The variable is expected to be constructed using the VARIABLE predicate.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[dec *var] [*var : *value] [sub *value 1 *new] [*var *new]]<br />
+            [[dec *var *dec] [*var : *value] [sub *value *dec *new] [*var *new]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_define-this">
+        <div class="doc_predicate_header">
+            [define-this [atom : parameters] : body]
+        </div>
+        <div class="doc_predicate_body">
+            Similar to <a href="#predicate_lambda">lambda</a> but does not create anonymous atoms.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[define-this : *x] [addcl *x]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_eq">
+        <div class="doc_predicate_header">
+            [eq *x *y]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the two parameters are equal and assigns them to each other.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[eq *x *x]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_FOR">
+        <div class="doc_predicate_header">
+            [FOR *x [.....] : instructions]<br />
+            [FOR *x from to step : instructions>
+        </div>
+        <div class="doc_predicate_body">
+            Syntactic sugar implementing FOR and FOREACH construction.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[FOR * [] : *] /]<br />
+            [[FOR *head [*head : *] : *call] [ONE : *call] fail]<br />
+            [[FOR *head [* : *tail] : *call] / [FOR *head *tail : *call]]<br />
+            [[FOR *index *index *index *step : *call] [TRY : *call]/]<br />
+            [[FOR *index *index *to *step : *call] [ONE : *call] fail]<br />
+            [[FOR *index *from *to *step : *call]<br />
+            &emsp;&emsp;&emsp;[add *from *step *next] /<br />
+            &emsp;&emsp;&emsp;[FOR *index *next *to *step : *call]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_forever">
+        <div class="doc_predicate_header">
+            [forever : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Syntactic sugar implementing forever construction.
+            Repeats instructions until they backtrack.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[forever : *instructions] [res : *instructions] / [forever : *instructions]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_FOREVER">
+        <div class="doc_predicate_header">
+            [FOREVER : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Syntactic sugar implementing forever construction.
+            Repeats instructions forever.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[FOREVER : *instructions] [PROBE : *instructions] / [FOREVER : *instructions]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_IF">
+        <div class="doc_predicate_header">
+            [IF condition then]<br />
+            [IF condition then else]
+        </div>
+        <div class="doc_predicate_body">
+            Syntactic sugar implementing IF construction.
+            All sections (condition, then and else) are expected to be single calls.
+            Use <a href="#predicate_res">res</a> to construct blocks of instructions inside.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[IF *condition *then] *condition / [TRY *then] /]<br />
+            [[IF *condition *then] /]<br />
+            [[IF *condition *then *else] *condition / [TRY *then] /]<br />
+            [[IF *condition *then *else] [TRY *else] /]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_inc">
+        <div class="doc_predicate_header">
+            [inc variable]<br />
+            [inc variable increment]
+        </div>
+        <div class="doc_predicate_body">
+            Increments variable by increment.
+            If the increment is not specified the increments by one.
+            The variable is expected to be constructed using the VARIABLE predicate.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[inc *var] [*var : *value] [add *value 1 *new] [*var *new]]<br />
+            [[inc *var *inc] [*var : *value] [add *value *inc *new] [*var *new]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_INDEX">
+        <div class="doc_predicate_header">
+            [INDEX index relation]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a duplicate of the relation, which can be processed using multi-core processing.
+            The <b>index</b> itself can be used in the same way as <a href="#predicate_isall">isall</a>,
+            but the list of results may be in random order, i.e. due to the fact that each definition
+            may be processed by a separate thread. [index] closes the index.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_INLIST">
+        <div class="doc_predicate_header">
+            [INLIST list-1 element list-2]
+        </div>
+        <div class="doc_predicate_body">
+            Inserts the element into list-1 thus producing list-2.
+            The element is first inserted at the beginning of the list-1.
+            On a sub-sequent backtracking it is re-position as second, third and so on.
+            INLIST can also be used for checking if list-2 is a version of list-1 with element inserted at some position.
+            It can also take out the element from list-2 thus producing list-1.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[INLIST *l *x [*x : *l]]]<br />
+            [[INLIST [*h : *l] *x [*h : *ll]] [INLIST *l *x *ll]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_isall">
+        <div class="doc_predicate_header">
+            [isall list template : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Collects all the results of instructions into a list of elements specified by the template.
+            Uses <a href="#predicate_ISALL">ISALL</a> internally.
+            The result is in reversed order (as per accumulator).<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[isall *list *template : *call]<br />
+            &emsp;&emsp;&emsp;[ACCUMULATOR *atom]<br />
+            &emsp;&emsp;&emsp;[ISALL *atom *template : *call]<br />
+            &emsp;&emsp;&emsp;[*atom : *list] /<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ISALL">
+        <div class="doc_predicate_header">
+            [ISALL accumulator template : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Collects all the results of instructions into an accumulator.
+            The elements are specified by the template.
+            The result is in reversed order (as per accumulator).<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[ISALL *atom *template : *call]<br />
+            &emsp;&emsp;&emsp;[res : *call]<br />
+            &emsp;&emsp;&emsp;[*atom *template] fail<br />
+            ]<br />
+            [[ISALL :*]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_isallq">
+        <div class="doc_predicate_header">
+            [isallq list template : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Similar to <a href="predicate_isall">isall</a> but the resulting list is un-reversed.
+            Also, the underlying implementation uses <a href="#predicate_QUEUE">QUEUE</a>,
+            hence the variables in the resulting list will not be correctly indexed.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[isallq *list *template : *call]<br />
+	        &emsp;&emsp;&emsp;[QUEUE *atom]<br />
+	        &emsp;&emsp;&emsp;[ISALL *atom *template : *call]<br />
+	        &emsp;&emsp;&emsp;[*atom : *list]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_isallr">
+        <div class="doc_predicate_header">
+            [isallr list template : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Similar to <a href="predicate_isall">isall</a> but the resulting list is un-reversed.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[isallr *list *template : *call]<br />
+	        &emsp;&emsp;&emsp;[ACCUMULATOR *atom]<br />
+	        &emsp;&emsp;&emsp;[ISALL *atom *template : *call]<br />
+	        &emsp;&emsp;&emsp;[*atom : *reversed_list]<br />
+	        &emsp;&emsp;&emsp;[REVERSE *reversed_list *list] /<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_lambda">
+        <div class="doc_predicate_header">
+            [lambda atom [parameters....] [call-1....] [call-2....] ....]
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a clause and attaches it to atom.
+            If atom is a variable then a new anonymous atom is constructed.
+            It is possible to use lambda multiple times with the same atom.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[lambda *atom *parameters : *body] [create_atom *atom] [addcl [[*atom : *parameters] : *body]]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_lazy">
+        <div class="doc_predicate_header">
+            [lazy [call-1....] [call-2....] ....]
+        </div>
+        <div class="doc_predicate_body">
+            Re-hashes the oreder of calls until they all work.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[lazy]]<br />
+            [[lazy : *commands]<br />
+            &emsp;&emsp;&emsp;[INLIST *next *command *commands]<br />
+            &emsp;&emsp;&emsp;*command<br />
+            &emsp;&emsp;&emsp;[lazy : *next]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_LENGTH">
+        <div class="doc_predicate_header">
+            [LENGTH list length]
+        </div>
+        <div class="doc_predicate_body">
+            Counts the number of elements on the list.
+            It can also construct a list of variables with specified length.
+            Can be also used for tests.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[LENGTH [] 0]]<br />
+            [[LENGTH [*head : *tail] *length] [LENGTH *tail *l] [sum *l 1 *length]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_MAP">
+        <div class="doc_predicate_header">
+            [MAP combined-list list-1 list-2]
+        </div>
+        <div class="doc_predicate_body">
+            Combines elements from two lists into a list of pairs.
+            Can be used both ways, i.e. to decompose a list of pairs into two lists.
+            Can be also used for tests.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[MAP [] [] []]]<br />
+            [[MAP [[*x *y] : *xyt] [*x : *xt] [*y : *yt]] / [MAP *xyt *xt *yt]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_maximise">
+        <div class="doc_predicate_header">
+            [maximise *x from to]<br />
+            [maximise *x from to step]
+        </div>
+        <div class="doc_predicate_body">
+            Generates numbers in the range [from .. to] using backtracking
+            and starting from the highest value.
+            The optional step parameter controls the granularity.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[maximise *x *from *to] / [maximise *x *from *to 1]]<br />
+            [[maximise *from *from *from *step]/]<br />
+            [[maximise *to *from *to *step]]<br />
+            [[maximise *x *from *to *step] [less *from *to] [sub *to *step *next] / [maximise *x *from *next *step]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_minimise">
+        <div class="doc_predicate_header">
+            [minimise *x from to]<br />
+            [minimise *x from to step]
+        </div>
+        <div class="doc_predicate_body">
+            Generates numbers in the range [from .. to] using backtracking
+            and starting from the lowest value.
+            The optional step parameter controls the granularity.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[minimise *x *from *to] / [minimise *x *from *to 1]]<br />
+            [[minimise *to *to *to *step]/]<br />
+            [[minimise *from *from *to *step]]<br />
+            [[minimise *x *from *to *step] [less *from *to] [add *from *step *next] / [minimise *x *next *to *step]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_NODUP">
+        <div class="doc_predicate_header">
+            [NODUP list-1 list-2]
+        </div>
+        <div class="doc_predicate_body">
+            Constructs list-2 by taking the duplicates out from list-1.
+            Works only one way with list-1 being the input and list-2 the output.
+            Can be used for testing if list-1 is provided.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[NODUP [] []]/]<br />
+            [[NODUP [*x : *t] *result] [ONLIST *x *t] / [NODUP *t *result]]<br />
+            [[NODUP [*x : *t] [*x : *result]] / [NODUP *t *result]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_not">
+        <div class="doc_predicate_header">
+            [not : *command]
+        </div>
+        <div class="doc_predicate_body">
+            Reverses the result of calculation.
+            Does not instantiate variables if succeeds.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[not : *x] *x / fail]<br />
+            [[not : *x]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ONE">
+        <div class="doc_predicate_header">
+            [ONE : *commands]
+        </div>
+        <div class="doc_predicate_body">
+            Only one soultion. Guards agains backtracking with implicit cut.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[ONE :*o][res :*o]/]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ONLIST">
+        <div class="doc_predicate_header">
+            [ONLIST element list]
+        </div>
+        <div class="doc_predicate_body">
+            Checks if the element is on the list.
+            If list contains variables then they become the element.
+            If element is a variable then it become the first element of the list and on sub-sequent backtracking
+            second, third and so on.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[ONLIST *x [*x : *]]]<br />
+            [[ONLIST *x [* : *l]] [ONLIST *x *l]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_PROBE">
+        <div class="doc_predicate_header">
+            [PROBE : *commands]
+        </div>
+        <div class="doc_predicate_body">
+            Always works. However, variable instantiation is cancelled by implicit backtracking.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[PROBE :*o][ONE :*o] fail]<br />
+            [[PROBE :*o]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_QUEUE">
+        <div class="doc_predicate_header">
+            [QUEUE queue]<br />
+            ==================<br />
+            [queue term term .... term] => push terms into the queue / pops terms from the queue if variable<br />
+            [queue : *term] => retrieves the entire queue<br />
+            [queue] => destroys the queue
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a queue.
+            If queue is a variable then an anonymous atom is created.<br />
+            The queue is initially empty.
+            Every time a value is passed to the queue,
+            it is placed at the end of the queue.
+            Every time a variable is passed, a value is popped from the beginning of the queue.<br />
+            <b>Note:</b> QUEUE is not designed to correctly index variables. Avoid pushing terms containing variables.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_res">
+        <div class="doc_predicate_header">
+            [res : *commands]
+        </div>
+        <div class="doc_predicate_body">
+            Groups several (or none) commands into one block.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[res : *commands] : *commands]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_REVERSE">
+        <div class="doc_predicate_header">
+            [REVERSE list-1 list-2]<br />
+            [REVERSE list-1 accumulator list-2]
+        </div>
+        <div class="doc_predicate_body">
+            Reverses a list. It is implemented with accumulator, which becomes the tail of the revesed list.
+            Can be used for testing.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[REVERSE *l1 *l2] [REVERSE *l1 [] *l2]]<br />
+            [[REVERSE [] *x *x]]<br />
+            [[REVERSE [*head : *tail] *l0 *list] [REVERSE *tail [*head : *l0] *list]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_rres">
+        <div class="doc_predicate_header">
+            [rres [command : parameters]]
+        </div>
+        <div class="doc_predicate_body">
+            Random clause. Modifies the order of clause selection for calling
+            by choosing one with eqal probability.
+            On backtracking chooses another one until all possible choices are explored.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[rres [*atom : *parameters]]<br />
+            &emsp;&emsp;&emsp;[CL *atom *clauses]<br />
+            &emsp;&emsp;&emsp;[series 0 *clauses 1 *serie]<br />
+            &emsp;&emsp;&emsp;/ [random_cl *serie *atom : *parameters]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_SELECT">
+        <div class="doc_predicate_header">
+            [SELECT commands-1 commands-2 .... commands-n]
+        </div>
+        <div class="doc_predicate_body">
+            Inline clause definition.<br />
+            Tries to executed the first list of commands.
+            If it fails the tries the next one and so on.
+            The cut (/) operator works as expected, i.e. block backtracking to another list of commands.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[SELECT] / fail]<br />
+            [[SELECT *branch : *] : *branch]<br />
+            [[SELECT * : *branches] / [SELECT : *branches]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sort">
+        <div class="doc_predicate_header">
+            [sort less in out tail]<br />
+            [sort in out]
+        </div>
+        <div class="doc_predicate_body">
+            Sorts the input list producing the output list.
+            Version one allows for supplying the comparison operation
+            and also generates the differential tail list of the output list
+            (i.e. out = [1 2 3 4 : *tail] / tail = *tail).<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[divide *less *x [] *lt *lt *gt *gt]/]<br />
+            [[divide *less *x [*h : *t] *lt *lta [*h : *gt] *gta] [*less *x *h] / [divide *less *x *t *lt *lta *gt *gta]]<br />
+            [[divide *less *x [*h : *t] [*h : *lt] *lta *gt *gta] / [divide *less *x *t *lt *lta *gt *gta]]<br />
+            [[sort *less [] *gs *gs]/]<br />
+            [[sort *less [*h : *t] *gts *gtsa]<br />
+            &emsp;&emsp;&emsp;[divide *less *h *t *lt *lta *gt *gta]/<br />
+            &emsp;&emsp;&emsp;[sort *less *lt *gts [*h : *gs]]/<br />
+            &emsp;&emsp;&emsp;[sort *less *gt *gs *gtsa]/<br />
+            ]<br />
+            [[sort *in *out] / [sort less *in *out []]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_STACK">
+        <div class="doc_predicate_header">
+            [STACK stack]<br />
+            ==================<br />
+            [stack term term .... term] => push terms onto the stack / pops terms from the stack if variable<br />
+            [stack : *term] => retrieves the entire stack<br />
+            [stack] => destroys the stack
+        </div>
+        <div class="doc_predicate_body">
+            Constructs a stack.
+            If stack is a variable then an anonymous atom is created.<br />
+            The stack is initially empty.
+            Every time a value is passed to the stack,
+            it is pushed to the top. Every time a variable is passed, a value is popped from the stack.<br />
+            <b>Note:</b> STACK is not designed to correctly index variables. Avoid pushing terms containing variables.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_TRY">
+        <div class="doc_predicate_header">
+            [TRY : *commands]
+        </div>
+        <div class="doc_predicate_body">
+            Always works.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[TRY :*o]:*o]<br />
+            [[TRY :*o]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ures">
+        <div class="doc_predicate_header">
+            [ures [command : parameters]]<br />
+            ===============================<br />
+            Clause form:<br />
+            [[atom probability : parameters] : body]
+        </div>
+        <div class="doc_predicate_body">
+            Random clause. Modifies the order of clause selection for calling
+            by choosing one with non-eqal probability.
+            The probability is controlled by clauses itself using the <b>probability</b> value.
+            The probability value greater than one indicates that the clause can be used on backtracking
+            multiple times, as if the definition was duplicated as many times as the <b>probability</b>
+            value indicates.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[ures [*atom : *parameters]]<br />
+            &emsp;&emsp;&emsp;[isall *probabilities *ind [cl [[*atom *ind :*] :*]]]<br />
+            &emsp;&emsp;&emsp;[LENGTH *probabilities *length]<br />
+            &emsp;&emsp;&emsp;[sub *length 1 *next]<br />
+            &emsp;&emsp;&emsp;[explode *probabilities *next *full_list]<br />
+            &emsp;&emsp;&emsp;[series *full_list *permutated]<br />
+            &emsp;&emsp;&emsp;/ [random_cl *permutated *atom : *parameters]<br />
+            ]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_variable">
+        <div class="doc_predicate_header">
+            [var v1 v2 .... vn]<br />
+            [var [v1 value] [v2 value] .... [vn value]]<br />
+            [var v1 [v2 value] v3 .... etc.]<br />
+            [var]
+        </div>
+        <div class="doc_predicate_body">
+            Creates variables.
+            If variable name is not an atom then a new anonymous atom is constructed.
+            Each variable is initialised with a value.
+            If no value is specified then it will be initialised with [].
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[var]]<br />
+            [[var *var : *vars] [is_var *var] / [VARIABLE *var] / [var : *vars]]<br />
+            [[var [*var *value] : *vars] / [VARIABLE *var *value] / [var : *vars]]<br />
+            [[var *var : *vars] [VARIABLE *var] / [var : *vars]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_VARIABLE">
+        <div class="doc_predicate_header">
+            [VARIABLE atom value]<br />
+            [VARIABLE atom]
+        </div>
+        <div class="doc_predicate_body">
+            Creates a variable.
+            If initial value is not specified then it will be initialised with [].
+            If atom is a variable then a new anonymous atom is constructed.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_WHILE">
+        <div class="doc_predicate_header">
+            [WHILE condition : instructions]
+        </div>
+        <div class="doc_predicate_body">
+            Syntactic sugar implementing WHILE construction.<br />
+            Macrodefinition:
+        </div>
+        <div class="doc_predicate_code">
+            [[WHILE *condition : *call] [not not : *condition] / [PROBE : *call] / [WHILE *condition : *call]]<br />
+            [[WHILE : *]]
+        </div>
+    </a>
+</div>
+
+<div class="doc_library"><a id="conductor">LIBRARY: <b>conductor</b></a></div>
+
+<div class="doc_library"><a id="midi">LIBRARY: <b>midi</b></a></div>
+
+<div class="doc_library_section"><a id="midi_network">MIDI network predicates</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_connectThru">
+        <div class="doc_predicate_header">
+            [connectThru line_from line_to]<br />
+            [connectThru line] ; disconnect
+        </div>
+        <div class="doc_predicate_body">
+            Connect two MIDI lines as thru.
+            Version with single parameter disconnects thru.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_createDestination">
+        <div class="doc_predicate_header">
+            [createDestination line "name"]<br />
+            [createDestination "name" line]<br />
+            ===============================
+            [line] ; closes the line
+        </div>
+        <div class="doc_predicate_body">
+            Creates a MIDI destination.
+            The "name" parameters specifies physical MIDI output or device.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_createLine">
+        <div class="doc_predicate_header">
+            [createLine line]<br />
+            [createLine line callback]<br />
+            [createLine line size]<br />
+            [createLine line callback size]<br />
+            [createLine line size callback]<br />
+            ===================================
+            [connectThru line another_line] ; connect another line as thru<br />
+            [connectThru line] ; disconnect thru<br />
+            [line] ; closes the line
+        </div>
+        <div class="doc_predicate_body">
+            Creates a MIDI source line.
+            The "name" parameter specifies physical MIDI input port or device.
+            The optional callback will be activated on every MIDI message after arrival.
+            Once created, the line can be closed or connected / disconnected with other lines.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_createSource">
+        <div class="doc_predicate_header">
+            [createSource line "name"]<br />
+            [createSource "name" line]<br />
+            [createSource line callback "name"]<br />
+            [createSource line "name" callback]<br />
+            [createSource "name" line callback]<br />
+            ===================================
+            [connectThru line another_line] ; connect another line as thru<br />
+            [connectThru line] ; disconnect thru<br />
+            [line] ; closes the line
+        </div>
+        <div class="doc_predicate_body">
+            Creates a MIDI source line.
+            The "name" parameter specifies physical MIDI input port or device.
+            The optional callback will be activated on every MIDI message after arrival.
+            Once created, the line can be closed or connected / disconnected with other lines.
+            Both line and callback can be variables. In such case anonymous atoms are created.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_defaultDestination">
+        <div class="doc_predicate_header">
+            [defaultDestination line]<br />
+            [defaultDestination]
+        </div>
+        <div class="doc_predicate_body">
+            Selects one particular MIDI line as the default destination of MIDI commands.
+            When no line is specified the default destination is removed.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="midi_commands">MIDI commands</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_activesensing">
+        <div class="doc_predicate_header">
+            [activesensing (line)]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>activesensing</b> MIDI message <b>= 0xFE</b>.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_aftertouch">
+        <div class="doc_predicate_header">
+            [aftertouch (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>aftertouch</b> MIDI message <b>= 0xDc vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_chex">
+        <div class="doc_predicate_header">
+            [chex (line) channel_11_bit (:) *channel]<br />
+            [chex (line) channel_11_bit offset (:) *offsetted_channel]<br />
+            [chex (line) (:) *extension]
+        </div>
+        <div class="doc_predicate_body">
+            Inserts channel extension message: <b>0xF3 extension</b> or retrieves
+            the current channel extension from a MIDI line.
+            This MIDI message has been invented for the purpose of the HERCs system.
+            It extends the number of available MIDI channels to 2048.
+            All MIDI commands are designed within this system to transmit
+            channel extension message automatically if the MIDI channel specified
+            int the command is out of the current range.<br />
+            Example:<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;[keyon 19 60 100] will emit => F3 01 93 3C 64<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;the subsequent:
+            &nbsp;&nbsp;&nbsp;&nbsp;[keyon 4 60 100] will emit => F3 00 94 3C 64<br />
+            The <b>chex</b> command emits just the channel extension message
+            and returns the lowest 4 bits of the extended channel.
+            If the offset is specified then this offset is added to the lowest 4 bits
+            of the extended channel and returned.
+            If no parameters are specified (only variable) then chex retrieves the current extension channel.<br />
+            The purpose of <b>chex</b> is to be used in connection with <b>sysex</b>
+            for programming HERCs native MIDI transmission.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_chexer">
+        <div class="doc_predicate_header">
+            [chexer value *extension *offset *channel]<br />
+            [chexer *value extension offset channel]<br />
+            [chexer value extension offset channel]
+        </div>
+        <div class="doc_predicate_body">
+            Combines extension, offset and channel into one value
+            or reconstructs them from the value supplied.
+            It is designed to be used in MIDI system exclusive messages
+            where channel extension is involved.
+            It can also be used for testing.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_CONTINUE">
+        <div class="doc_predicate_header">
+            [CONTINUE (line)]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>continue</b> MIDI message <b>= 0xFB</b>.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_control">
+        <div class="doc_predicate_header">
+            [control (line) ch cc vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>control</b> MIDI message <b>= 0xBc cc vv</b>.
+            If vv is negative then vv := 128 + vv.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_CONTROL">
+        <div class="doc_predicate_header">
+            [CONTROL (line) ch cc vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>control</b> MIDI message <b>= 0xBc cc+32 ll 0xBc cc hh</b> where <b>hhll</b> is a 14-bit-value.
+            If vv is negative then vv := 16384 + vv.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_keyoff">
+        <div class="doc_predicate_header">
+            [keyoff (line) ch kk]<br />
+            [keyoff (line) ch kk vv]<br />
+            [keyoff (line) ch]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>keyoff</b> MIDI message <b>= 0x8c kk vv</b> or <b>all-keys-off</b> control MIDI message <b>= 0xBc 123 0</b>.
+            If the velocity value is omitted then the default ZERO is used instead.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_keyon">
+        <div class="doc_predicate_header">
+            [keyon (line) ch kk vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>keyon</b> MIDI message <b>= 0x9c kk vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_midi_message">
+        <div class="doc_predicate_header">
+            [midi_message (line) v1 v2 .... vn]
+        </div>
+        <div class="doc_predicate_body">
+            Sends an arbitrary sequence of numbers into a MIDI line as they are.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pitch">
+        <div class="doc_predicate_header">
+            [pitch (line) ch hh]<br />
+            [pitch (line) ch ll hh]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>pitch</b> MIDI message <b>= 0xEc ll hh</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_PITCH">
+        <div class="doc_predicate_header">
+            [PITCH (line) ch 14-bit-value]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>pitch</b> MIDI message <b>= 0xEc ll hh</b> where <b>hhll</b> is a 14-bit value.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_polyaftertouch">
+        <div class="doc_predicate_header">
+            [polyaftertouch (line) ch kk vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>polyaftertouch</b> MIDI message <b>= 0xAc kk vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_programchange">
+        <div class="doc_predicate_header">
+            [programchange (line) ch pp]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>programchange</b> MIDI message <b>= 0xCc pp</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_START">
+        <div class="doc_predicate_header">
+            [START (line)]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>start</b> MIDI message <b>= 0xFA</b>.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_STOP">
+        <div class="doc_predicate_header">
+            [STOP (line)]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>stop</b> MIDI message <b>= 0xFC</b>.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sysex">
+        <div class="doc_predicate_header">
+            [sysex (line) cvv dd .... dd]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>system exclusive</b> MIDI message <b>= (0xF3 c) 0xF0 manufacturers_id product_id vv dd .... dd 0xF7</b>.
+            Channel extension <b>c</b> (if differs), manufacturers_id (1 or 3 bytes) and product_id (up to 4 bytes)
+            are automatically inserted.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_SYSEX">
+        <div class="doc_predicate_header">
+            [SYSEX (line) id cvv dd .... dd]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>system exclusive</b> MIDI message <b>= (0xF3 c) 0xF0 id vv dd .... dd 0xF7</b>.
+            Channel extension <b>c</b> (if differs) is automatically inserted.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_sysexch">
+        <div class="doc_predicate_header">
+            [sysexch (line) cvv dd .... dd]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>system exclusive</b> MIDI message <b>= (0xF3 c) 0xF0 manufacturers_id product_id vv dd .... dd cs 0xF7</b>.
+            Channel extension <b>c</b> (if differs), manufacturers_id (1 or 3 bytes), product_id (up to 4 bytes)
+            and checksum <b>cs</b> (calculated)
+            are automatically inserted.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_SYSEXCH">
+        <div class="doc_predicate_header">
+            [SYSEXCH (line) id cvv dd .... dd]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>system exclusive</b> MIDI message <b>= (0xF3 c) 0xF0 id vv dd .... dd cs 0xF7</b>.
+            Channel extension <b>c</b> (if differs) and checksum <b>cs</b> (calculated) are automatically inserted.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_timingclock">
+        <div class="doc_predicate_header">
+            [timingclock (line)]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>timingclock</b> MIDI message <b>= 0xF8</b>.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="midi_controllers">MIDI commands</a></div>
+
+<div class="doc_predicate">
+    <a id="predicate_attack_controller">
+        <div class="doc_predicate_header">
+            [attack (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>attack</b> pre-definded MIDI controller message <b>= 0xBc 73 vv</b>.
+            If vv is negative then vv := 128 + vv.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_ATTACK_controller">
+        <div class="doc_predicate_header">
+            [ATTACK (line) ch 14-bit-value]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>attack</b> pre-definded MIDI controller message <b>= 0xBc 105 ll 0xBc 73 hh</b> where <b>hhll</b> is a 14-bit-value.
+            If vv is negative then vv := 16384 + vv.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_bank_controller">
+        <div class="doc_predicate_header">
+            [bank (line) ch vv]<br />
+            [bank (line) ch msb lsb]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>bank change</b> pre-definded MIDI controller message <b>= 0xBc 0 vv</b>
+            or two consecutive messages <b>= 0xBc 32 lsb 0xBc 0 msb</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_bank_lsb_controller">
+        <div class="doc_predicate_header">
+            [banklsb (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>bank change lsb</b> pre-definded MIDI controller message <b>= 0xBc 32 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_breath_controller">
+        <div class="doc_predicate_header">
+            [breath (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>breath</b> pre-definded MIDI controller message <b>= 0xBc 2 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_chorus_controller">
+        <div class="doc_predicate_header">
+            [chorus (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>chorus</b> pre-definded MIDI controller message <b>= 0xBc 91 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_cutoff_controller">
+        <div class="doc_predicate_header">
+            [cutoff (line) cha vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>cutoff</b> pre-definded MIDI controller message <b>= 0xBc 74 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_foot_controller">
+        <div class="doc_predicate_header">
+            [foot (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>foot</b> pre-definded MIDI controller message <b>= 0xBc 4 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_holdoff_controller">
+        <div class="doc_predicate_header">
+            [holdoff (line) ch]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>hold off</b> pre-definded MIDI controller message <b>= 0xBc 64 0</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_holdon_controller">
+        <div class="doc_predicate_header">
+            [holdon (line) ch]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>hold on</b> pre-definded MIDI controller message <b>= 0xBc 64 127</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_modulation_controller">
+        <div class="doc_predicate_header">
+            [modulation (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>modulation</b> pre-definded MIDI controller message <b>= 0xBc 1 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_mono_controller">
+        <div class="doc_predicate_header">
+            [mono (line) ch]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>mono</b> pre-definded MIDI controller message <b>= 0xBc 126 0</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_pan_controller">
+        <div class="doc_predicate_header">
+            [pan (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>pan</b> pre-definded MIDI controller message <b>= 0xBc 10 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_poly_controller">
+        <div class="doc_predicate_header">
+            [poly (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>poly</b> pre-definded MIDI controller message <b>= 0xBc 127 0</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_portaoff_controller">
+        <div class="doc_predicate_header">
+            [portaoff (line) ch]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>porta off</b> pre-definded MIDI controller message <b>= 0xBc 65 0</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_portaon_controller">
+        <div class="doc_predicate_header">
+            [portaon (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>porta on</b> pre-definded MIDI controller message <b>= 0xBc 65 127</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_portatime_controller">
+        <div class="doc_predicate_header">
+            [portatime (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>porta time</b> pre-definded MIDI controller message <b>= 0xBc 5 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_release_controller">
+        <div class="doc_predicate_header">
+            [release (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>release</b> pre-definded MIDI controller message <b>= 0xBc 72 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_resonance_controller">
+        <div class="doc_predicate_header">
+            [resonance (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>resonance</b> pre-definded MIDI controller message <b>= 0xBc 71 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_reverb_controller">
+        <div class="doc_predicate_header">
+            [reverb (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>reverb</b> pre-definded MIDI controller message <b>= 0xBc 93 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="predicate_volume_controller">
+        <div class="doc_predicate_header">
+            [volume (line) ch vv]
+        </div>
+        <div class="doc_predicate_body">
+            Sends the <b>volume</b> pre-definded MIDI controller message <b>= 0xBc 7 vv</b>.
+            <br />
+            The channel parameter (ch) can be greater than 15. The system automatically inserts channel extension message if necessary.
+            <br />
+            If the line parameter is omitted then the deault MIDI destination is used (if present).
+            Fails otherwise.
+        </div>
+    </a>
+</div>
+
+<div class="doc_predicate">
+    <a id="A1">
+        <div class="doc_predicate_header">
+            ###
+        </div>
+        <div class="doc_predicate_body">
+            ###
+        </div>
+    </a>
+</div>
+
+<div class="doc_library_section"><a id="musical_processing">Musical Processing</a></div>
+
+</div></div>
+</body>
+

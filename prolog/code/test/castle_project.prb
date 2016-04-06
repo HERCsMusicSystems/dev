@@ -1,0 +1,196 @@
+[import "http"]
+[import "store"]
+
+;//======== LOAD DATABASE =========//
+
+;//======== NATURAL LANGUAGE PROCESSOR =========//
+
+[[processor *res *file_name *content] [loaded_files *file_name] [*res "File " *file_name " already loaded."] /]
+[[processor *res *file_name *content]
+	[addcl [[loaded_files *file_name]]]
+	[*res "Reading " *file_name "<br/>"]
+	[text_term *content : *knowledge]
+	[process_knowledge *res : *knowledge]
+]
+
+[[process_knowledge *res] [*res "No (more) knowledge.<br/>"] /]
+[[process_knowledge *res []] [*res "No (more) knowledge.<br/>"] /]
+[[process_knowledge *res *statement : *statements] [process_statement *res *statement] / [process_knowledge *res : *statements]]
+
+[[process_statement *res *statement]
+	[AddKnowledge *res : *statement]
+]
+
+[[AddEntity *x] [entity *x]/]
+[[AddEntity *x] [addcl [[entity *x]]]]
+[[ToDoe *does *doe] [sum *x "s" *does] [search_atom_c *x *doe] /]
+[[ToDoe *doe *doe]]
+
+[[AddKnowledge *feed *x is *y] [addcl [[*x [[*x is *y] : *t] *t is *y]]] [AddEntity *x] [*feed "UNDERSTOOD (1) => " [[*x is *y]] "<br/>"] /]
+[[AddKnowledge *feed *x is a *y] [addcl [[*x [[*x is *y] : *t] *t is *y]]] [AddEntity *x] [*feed "UNDERSTOOD (2) => " [[*x is a *y]] "<br/>"] /]
+[[AddKnowledge *feed *x is an *y] [addcl [[*x [[*x is *y] : *t] *t is *y]]] [AddEntity *x] [*feed "UNDERSTOOD (3) => " [[*x is an *y]] "<br/>"] /]
+[[AddKnowledge *feed *x *does *something] [ToDoe *does *doe] [addcl [[*x [[*x *does *something] : *t] *t *doe *something]]] [AddEntity *x]
+	[*feed "UNDERSTOOD (4) => " [[*x *does *something]] "<br/>"] /]
+[[AddKnowledge *feed *x *does a *something] [ToDoe *does *doe] [addcl [[*x [[*x *does *someting] : *t] *t *doe *something]]] [AddEntity *x]
+	[*feed "UNDERSTOOD (5) => " [[*x *does a *something]] "<br/>"]/]
+[[AddKnowledge *feed *x *does an *something] [ToDoe *does *doe] [addcl [[*x [[*x *does *something] : *t] *t *doe *something]]] [AddEntity *x]
+	[*feed "UNDERSTOOD (6) => " [[*x *does an *something]] "<br/>"]/]
+[[AddKnowledge *feed *x *does] [ToDoe *does *doe] [addcl [[*x [[*x *does] : *t] *t *doe]]] [AddEntity *x] [*feed "UNDERSTAND (7) => " [[*x *does]] "<br/>"]/]
+[[AddKnowledge *feed *x *likes everyone who *does] [ToDoe *likes *like] [ToDoe *does *doe]
+	[addcl [[*x [[*x *likes *someone if *someone *does] : *next] *t *like *someone] [entity *someone] [QueryKnowledge *next *t *someone *doe]]]
+	[AddEntity *x]
+	[*feed "THIS IS COMPLEX (1) => " [[*x *likes X if X *does]] "<br/>"]/
+]
+[[AddKnowledge *feed *x *does *money per *period] [is_number *money]
+	[ToDoe *does *doe]
+	[AddEntity *x]
+	[addcl [[*x [[*x *does *money per *period] : *t] *t *doe *money per *period]]]
+	[*feed "THIS IS NUMERIC (1) => " [[*x *does *money per *period]] "<br/>"]/
+]
+[[AddKnowledge *feed there are *number *subs in a *period]
+	[ToDoe *subs *sub]
+	[AddEntity *period]
+	[addcl [[*period [[there are *number *subs in a *period] : *t] *t consists_of *number *sub]]]
+	[*feed "THIS IS NUMERIC RULE (1) => " [[there are *number *subs in a *period]] "<br/>"]/
+]
+[[AddKnowledge *feed : *command] [*feed "TOO HARD => " [*command] "<br/>"] /]
+
+;//======== QUERY PROCESSOR =======//
+
+[[querry *res *cleared]
+	[add "[" *cleared "]" *cl]
+	[text_term *cl *command]
+	[show [PreprocessQuery *track : *command]]
+	[PreprocessQuery *track *answer : *command]
+	[show *track]
+	[*res [*command] " ? => " [*answer] "<br/>"]
+	[ShowTrack *res : *track]
+	[*res "===========================<br/>"]
+	fail
+]
+[[querry *res : *]
+	[*res "NO (more) ANSWERS<br/>"]
+]
+
+[[ShowTrack *res] /]
+[[ShowTrack *res *track : *tracks] [*res [*track] "<br/>"] / [ShowTrack *res : *tracks]]
+
+[[PreprocessQuery *track YES does *someone *does : *command] / [QueryKnowledge *track [] *someone *does : *command]]
+[[PreprocessQuery *track *ANSWER how much *something *does per *period] / [ToDoe *does *doe] [QueryKnowledge *track [] *something *doe *ANSWER per *period]]
+[[PreprocessQuery *track YES : *command] / [QueryKnowledge *track [] : *command]]
+
+[[QueryKnowledge *track *tracks *x *does *y]
+	[entity *x]
+	[*x *track *tracks *does *y]
+]
+
+[[QueryKnowledge *track *tracks *x *does *y]
+	[entity *x]
+	[*x *track *next *does *someone]
+	[QueryKnowledge *next *tracks *someone is *y]
+]
+
+[[QueryKnowledge *track *tracks *someone *does]
+	[entity *someone]
+	[*someone *track *tracks *does]
+]
+
+[[QueryKnowledge *track *tracks *someone *does]
+	[entity *someone]
+	[*someone *track *next is *y]
+	[QueryKnowledge *next *tracks *y *does]
+]
+
+[[QueryKnowledge *track *tracks *something *does *money per *period]
+	[entity *something]
+	[*something *track *tracks *does *money per *period]
+]
+
+[[QueryKnowledge *track *tracks *something *does *money per *period]
+	[entity *something]
+	[*something *track *next *does *original_money per *sub]
+	[entity *period]
+	[*period *next *tracks consists_of *x *sub]
+	[mult *x *original_money *money]
+]
+
+[[QueryKnowledge *track *tracks *something *does *money per *period]
+	[entity *something]
+	[*something *track *next *does *original_money per *sub]
+	[entity *sub]
+	[*sub *next *tracks consists_of *x *period]
+	[times *x *money *original_money]
+]
+
+;//======== CONTROLLERS ===========//
+
+[[controller_view *req *res]
+	[*res "HTTP/1.1 200 OK\n\n<body background=resources/ai.png style=\"background-repeat: no-repeat;\">\n"]
+	[view_page *res]
+	[*res "</body>"]
+]
+
+[[controller_command *req *res]
+	[*res "HTTP/1.1 200 OK\n\n<body background=resources/ai.png style=\"background-repeat: no-repeat;\">\n"]
+	[*req param "command" *human]
+	[StringToLower *human *lowered]
+	[StringReplaceAll *lowered "?" "" *cleared]
+	[*res "<table align=\"center\"><tr><td>"]
+	[querry *res *cleared]
+	[*res "</td></tr></table>"]
+	[view_page *res]
+	[*res "</body>"]
+]
+
+[[controller_upload *req *res]
+	[*res "HTTP/1.1 200 OK\n\n<body background=resources/ai.png style=\"background-repeat: no-repeat;\">\n"]
+	[*req param "uploader_filename" *file_name]
+	[*req param "uploader" *file_content]
+	[StringToLower *file_content *lowered]
+	[StringReplaceAll *lowered "." "][" *splitted]
+	[add "[" *splitted "]" *complete]
+	[*res "<table align=\"center\"><tr><td>"]
+	[processor *res *file_name *complete]
+	[*res "</td></tr></table>"]
+	[view_page *res]
+	[*res "</body>"]
+]
+
+;//========== VIEW(s) =========//
+
+[[view_page *res]
+	[*res "<center>"]
+	;[*res "><h1>CASTLE PROJECT</h1>"]
+	[FORM *res POST command]
+		[*res "<input type=text name=command size=32/>"]
+		[param *res "submit" "enter" "Enter"]
+	[FORM *res]
+	[MULTIFORM *res POST upload]
+		[*res "<input type=\"file\" name=\"uploader\"\>"]
+		[param *res "submit" "enter" "Upload"]
+	[FORM *res]
+	[*res "</center>"]
+]
+
+;//========== ROUTER ==========//
+
+[[router *req *res] [*req HTTP_URI : *route] [show *route] [route *req *res : *route]]
+
+;//========== ROUTES ===========//
+
+[[route *req *res * command] [controller_command *req *res]]
+[[route *req *res * upload] [controller_upload *req *res]]
+[[route *req *res GET "castle"] [controller_view *req *res]]
+[[route *req *res GET resources *file_name : *] [*res [] : *file_name]]
+[[route *req *res GET ""] [*res "HTTP/1.0 200 OK\n\n<body><h1>Prolog Webserver</h1></body>"]]
+[[route *req *res : *] [*res "HTTP/1.1 401 Not found\n\n"]]
+
+;//========== WEBSERVER ===========//
+
+[webserver service 3008 router]
+[show "ready"]
+[command]
+
+;//========== END-OF-SCRIPT ===========//
+[exit]
+
