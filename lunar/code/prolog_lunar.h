@@ -142,6 +142,14 @@ public:
 	filter_panel_class (PrologLunarServiceClass * servo);
 };
 
+class formant_filter_panel_class : public PrologNativeCode {
+public:
+	PrologRoot * root;
+	GraphicResources * resources;
+	bool code (PrologElement * parameters, PrologResolution * resolution);
+	formant_filter_panel_class (PrologLunarServiceClass * servo);
+};
+
 class delay_panel_class : public PrologNativeCode {
 public:
 	PrologRoot * root;
@@ -237,6 +245,12 @@ class filter_class : public PrologNativeOrbiterCreator {
 public:
 	virtual orbiter * create_orbiter (PrologElement * parameters);
 	filter_class (orbiter_core * core);
+};
+
+class formant_filter_class : public PrologNativeOrbiterCreator {
+public:
+	virtual orbiter * create_orbiter (PrologElement * parameters);
+	formant_filter_class (orbiter_core * core);
 };
 
 class PrologLunarServiceClass : public PrologServiceClass {

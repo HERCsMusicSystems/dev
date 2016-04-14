@@ -18,7 +18,7 @@ program lunar #machine := "lunar"
 				pan power_pan linear_pan stereo_pan stereo_power_pan stereo_linear_pan
 				drywet drywet_mono dry wet balance
 				level level1 level2 level3 level4 time1 time2 time3 time4 attack decay sustain release
-				freq amp gain ratio sync cutoff resonance formant hold busy portamento porta
+				freq amp gain ratio sync cutoff resonance formant formant_filter Q hold busy portamento porta
 				legato time speed wave pulse phase poly feedback highdamp diffusion
 				mono left right mic mic_left mic_right breakpoint BP algo key_ratio
 				key velocity keyon keyoff polyaftertouch control programchange aftertouch pitch
@@ -38,9 +38,10 @@ program lunar #machine := "lunar"
 				Bbb Bb B B# Bx
 				Hbb Hb H H# Hx
 				midi
-				ParameterBlockPanel AdsrPanel EGPanel FEGPanel FM4Panel CorePanel LfoPanel FilterPanel
+				ParameterBlockPanel AdsrPanel EGPanel FEGPanel FM4Panel CorePanel LfoPanel FilterPanel FormantFilterPanel
 				DelayPanel ChorusPanel StereoChorusPanel FreeverbPanel
-				BuildParameterBlockPanel BuildAdsrPanel BuildEGPanel BuildFEGPanel BuildFM4Panel BuildLfoPanel BuildFilterPanel
+				BuildParameterBlockPanel BuildAdsrPanel BuildEGPanel BuildFEGPanel BuildFM4Panel BuildLfoPanel
+				BuildFilterPanel BuildFormantFilterPanel
 				BuildDelayPanel BuildChorusPanel BuildStereoChorusPanel BuildFreeverbPanel
 				FindLfoKnob
 				MoveModules PropagateSignals MoveCore LunarDrop FUNCTION_KEY
@@ -123,6 +124,7 @@ program lunar #machine := "lunar"
 #machine sampler_operator := "sampler_operator"
 #machine vco := "vco"
 #machine filter := "filter"
+#machine formant_filter := "formant_filter"
 
 #machine DCOffsetFilter := "DCOffsetFilter"
 #machine DCOffsetFilterMono := "DCOffsetFilterMono"
@@ -139,6 +141,7 @@ program lunar #machine := "lunar"
 #machine CorePanel := "CorePanel"
 #machine LfoPanel := "LfoPanel"
 #machine FilterPanel := "FilterPanel"
+#machine FormantFilterPanel := "FormantFilterPanel"
 #machine DelayPanel := "DelayPanel"
 #machine ChorusPanel := "ChorusPanel"
 #machine StereoChorusPanel := "StereoChorusPanel"
@@ -244,6 +247,15 @@ program lunar #machine := "lunar"
 	[APPEND *path [resonance] *resonance_path] [*parameters *resonance : *resonance_path]
 	[APPEND *path [amp] *amp_path] [*parameters *amp : *amp_path]
 	[FilterPanel *panel *freq *resonance *amp]
+]
+
+[[BuildFormantFilterPanel *panel *instrument : *path]
+	[*instrument *parameters : *]
+	[APPEND *path [freq] *freq_path] [*parameters *freq : *freq_path]
+	[APPEND *path [resonance] *resonance_path] [*parameters *resonance : *resonance_path]
+	[APPEND *path [Q] *q_path] [*parameters *q : *q_path]
+	[APPEND *path [amp] *amp_path] [*parameters *amp : *amp_path]
+	[FormantFilterPanel *panel *freq *resonance *q *amp]
 ]
 
 [[BuildDelayPanel *panel *instrument : *path]
@@ -895,6 +907,13 @@ program lunar #machine := "lunar"
 [[InsertIO *parameters *filter *selector [["ENTER" "FREQ" "RESONANCE" "AMP" "GAIN" : *] *]]
 	[AddParameterBlock *parameters freq *filter *selector 5120 "freq"]
 	[AddParameterBlock *parameters resonance *filter *selector 0 "index"]
+	[AddParameterBlock *parameters amp *filter *selector 0 "amp"]
+]
+
+[[InsertIO *parameters *filter *selector [["ENTER" "FREQ" "RESONANCE" "Q" "AMP" "GAIN" : *] *]]
+	[AddParameterBlock *parameters freq *filter *selector 5120 "freq"]
+	[AddParameterBlock *parameters resonance *filter *selector 0 "index"]
+	[AddParameterBlock *parameters Q *filter *selector 0 "index"]
 	[AddParameterBlock *parameters amp *filter *selector 0 "amp"]
 ]
 

@@ -286,6 +286,7 @@ PrologNativeCode * PrologLunarServiceClass :: getNativeCode (char * name) {
 	if (strcmp (name, "fm4") == 0) return new fm4_operator_class (& core);
 	if (strcmp (name, "vco") == 0) return new vco_operator_class (& core);
 	if (strcmp (name, "filter") == 0) return new filter_class (& core);
+	if (strcmp (name, "formant_filter") == 0) return new formant_filter_class (& core);
 	if (strcmp (name, "DCOffsetFilter") == 0) return new DCOffsetFilter_class (& core, false);
 	if (strcmp (name, "DCOffsetFilterMono") == 0) return new DCOffsetFilter_class (& core, true);
 	if (strcmp (name, "parameter_block") == 0) return new parameter_block_class (& core);
@@ -343,6 +344,7 @@ PrologNativeCode * PrologLunarServiceClass :: getNativeCode (char * name) {
 	if (strcmp (name, "CorePanel") == 0) return new core_panel_class (this);
 	if (strcmp (name, "LfoPanel") == 0) return new lfo_panel_class (this);
 	if (strcmp (name, "FilterPanel") == 0) return new filter_panel_class (this);
+	if (strcmp (name, "FormantFilterPanel") == 0) return new formant_filter_panel_class (this);
 	if (strcmp (name, "DelayPanel") == 0) return new delay_panel_class (this);
 	if (strcmp (name, "ChorusPanel") == 0) return new chorus_panel_class (this);
 	if (strcmp (name, "StereoChorusPanel") == 0) return new stereo_chorus_panel_class (this);
